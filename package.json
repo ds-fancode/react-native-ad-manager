@@ -1,7 +1,7 @@
 {
   "name": "react-native-ad-manager",
   "title": "React Native Ad Manager",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A react-native component for Google Ad Manager banners, interstitials and native ads.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -37,6 +37,7 @@
     "ios",
     "android"
   ],
+  "homepage": "https://github.com/NZME/react-native-ad-manager#readme",
   "repository": "https://github.com/raja-kedia/react-native-ad-manager",
   "author": "Raja kedia <raja.kedia@fancode.com> (https://github.com/raja-kedia)",
   "license": "MIT",
