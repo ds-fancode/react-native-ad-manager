@@ -23,11 +23,11 @@ class TriggerableViewChild extends React.Component {
   // TODO: convert to ref type
   handleWrapperRef = (ref: any) => {
     if (this.wrapperRef) {
-      this.context.unregister(this.wrapperRef);
+      (this.context as any).unregister(this.wrapperRef);
       this.wrapperRef = null;
     }
     if (ref) {
-      this.context.register(ref);
+      (this.context as any).register(ref);
       this.wrapperRef = ref;
     }
   };
