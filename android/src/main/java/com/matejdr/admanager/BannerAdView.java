@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Choreographer;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -122,6 +124,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 measurements.putInt("left", left);
                 measurements.putInt("top", top);
                 ad.putMap("measurements", measurements);
+                setupLayout();
 
                 sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
             }
@@ -372,6 +375,30 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 adManagerAdView.measure(width, height);
             }
             adManagerAdView.layout(left, top, left + width, top + height);
+        }
+    }
+
+
+
+    private void setupLayout() {
+        Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
+            @Override
+            public void doFrame(long frameTimeNanos) {
+                manuallyLayoutChildren();
+                getViewTreeObserver().dispatchOnGlobalLayout();
+                Choreographer.getInstance().postFrameCallback(this);
+            }
+        });
+    }
+
+    private void manuallyLayoutChildren() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            child.measure(
+                View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(getMeasuredHeight(), View.MeasureSpec.EXACTLY)
+            );
+            child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
         }
     }
 }
