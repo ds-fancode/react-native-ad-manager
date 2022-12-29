@@ -56,7 +56,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     public BannerAdView(final Context context, ReactApplicationContext applicationContext) {
         super(context);
-        currentActivityContext = applicationContext.getCurrentActivity();
+        // currentActivityContext = applicationContext.getCurrentActivity();
         applicationContext.addLifecycleEventListener(this);
         this.createAdView();
     }
@@ -73,9 +73,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     private void createAdView() {
         if (this.adManagerAdView != null) this.adManagerAdView.destroy();
-        if (this.currentActivityContext == null) return;
+        // if (this.currentActivityContext == null) return;
 
-        this.adManagerAdView = new AdManagerAdView(currentActivityContext);
+        // this.adManagerAdView = new AdManagerAdView(currentActivityContext);
+        final Context context = getContext();
++       this.adManagerAdView = new AdManagerAdView(context);
 
         if (isFluid()) {
             AdManagerAdView.LayoutParams layoutParams = new AdManagerAdView.LayoutParams(
@@ -287,9 +289,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             // We can only set adUnitID once, so when it was previously set we have
             // to recreate the view
             this.createAdView();
+            this.adUnitID = adUnitID;
+            if(this.adManagerAdView != null) {
+                this.adManagerAdView.setAdUnitId(adUnitID);
+            }
         }
-        this.adUnitID = adUnitID;
-        this.adManagerAdView.setAdUnitId(adUnitID);
     }
 
     public void setTestDevices(String[] testDevices) {
@@ -358,7 +362,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     @Override
     public void onHostDestroy() {
         if (this.adManagerAdView != null) {
-            this.currentActivityContext = null;
+            // this.currentActivityContext = null;
             this.adManagerAdView.destroy();
         }
     }
