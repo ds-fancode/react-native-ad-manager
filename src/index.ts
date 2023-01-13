@@ -8,3 +8,4 @@ export { default as withNativeAd } from './native-ads/withNativeAd';
 
 export * from './AdManagerEvent';
 export * from './AdManagerTypes';
+export {GamBannerView} from './banner-ads/BannerView'
