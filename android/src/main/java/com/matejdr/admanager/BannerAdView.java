@@ -77,7 +77,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
         // this.adManagerAdView = new AdManagerAdView(currentActivityContext);
         final Context context = getContext();
-+       this.adManagerAdView = new AdManagerAdView(context);
+       this.adManagerAdView = new AdManagerAdView(context);
 
         if (isFluid()) {
             AdManagerAdView.LayoutParams layoutParams = new AdManagerAdView.LayoutParams(
