@@ -1,3 +1,4 @@
+import { AdNudgeResponse } from "src/__tests__/mocks";
 import type { INudge } from "../interfaces/AdTypes";
 
 
@@ -28,10 +29,16 @@ export const fetchQuery = (nudgeVariables: INudge) => {
                 impressionLink
                 type
                 adunitID
+                adWidth
+                aspectRatio
+                type
               }
             }
           }`,
     }),
   })
-    .then(res => res.json())
+    // .then(res => res.json())
+    .then(_ => {
+      return AdNudgeResponse
+    })
 };

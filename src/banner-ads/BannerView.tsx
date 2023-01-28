@@ -2,18 +2,14 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
-import type { INudge, INudgeResponse } from '../interfaces/AdTypes';
-import { fetchQuery } from '../networkmanager/network';
 import {
   AD_UNIT_LIST,
-  getAdSize,
   getTransformationStyle,
   getWidthHeight,
 } from './utils';
 
 interface IProps {
   containerSize: string;
-  adProperties: INudge
   onAdLoaded?: (e: any) => void;
   onAdFailed?: (e: any) => void;
   onAdClicked?: () => void;
@@ -27,9 +23,6 @@ export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
 
-  const [isAdRequestMade, setIsAdRequestMade] = React.useState(false)
-  const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
-
   // Below line find nearest size ad from list of adIds
   // const adIDindex = getAdUnitID(
   //   props.adUnitList,
@@ -38,14 +31,13 @@ export function GamBannerView(props: IProps) {
   // );
   //   const {id: adUnitID, size: adSize} = props.adUnitList[adIDindex.index]; 
 
-  const adUnitID = props.adunitID || adRequest.data?.data.nudgeSegment.edges[0].adunitID;
-  const adSize = props.adSize || getAdSize(adRequest.data?.data.nudgeSegment.edges[0].adWidth, adRequest.data?.data.nudgeSegment.edges[0].aspectRatio)
+  const adUnitID = props.adunitID || '';
+  const adSize = props.adSize || ''
 
   const [adWidth, adHeight] = getWidthHeight(adSize);
   const [isGAMError, setIsGamError] = React.useState(false)
 
   const onAdfailed = (e: any) => {
-    // console.log('onAdfailed sdk: ', e);
     setIsGamError(true)
     props.onAdFailed && props.onAdFailed(e);
   };
@@ -69,21 +61,6 @@ export function GamBannerView(props: IProps) {
     [containerWidth, containerHeight],
   );
 
-  React.useEffect(() => {
-    if (!props.adunitID && !isAdRequestMade) {
-      fetchQuery(props.adProperties)
-        .then((res: INudgeResponse) => {
-          setAdRequest({ data: res, isError: false })
-        })
-        .catch((err: any) => {
-          setAdRequest({ isError: true })
-          setIsGamError(true)
-          // console.log('E: ', err);
-        });
-      // @Todo: Handle error
-      setIsAdRequestMade(true)
-    }
-  }, [])
 
   return adUnitID ?
     isGAMError ? null : (
@@ -93,6 +70,7 @@ export function GamBannerView(props: IProps) {
             ...props.gamContainerStyle,
             width: containerWidth,
             height: containerHeight,
+            backgroundColor: '#00000011'
           },
           styles.container,
         ]}>
