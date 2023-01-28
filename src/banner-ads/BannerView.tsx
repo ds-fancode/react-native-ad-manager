@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
 import {
@@ -22,7 +23,7 @@ interface IProps {
 export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
-
+  const [adLoaded, setIsAdLoaded] = React.useState(false)
   // Below line find nearest size ad from list of adIds
   // const adIDindex = getAdUnitID(
   //   props.adUnitList,
@@ -40,6 +41,7 @@ export function GamBannerView(props: IProps) {
   const onAdfailed = (e: any) => {
     console.log('GAM: onAdfailed sdk: ', e, adUnitID);
     setIsGamError(true)
+    setIsAdLoaded(true)
     props.onAdFailed && props.onAdFailed(e);
   };
 
@@ -49,6 +51,7 @@ export function GamBannerView(props: IProps) {
 
   const onAdLoad = (e: any) => {
     console.log('GAM: onAdLoad sdk: ', e, adUnitID);
+    setIsAdLoaded(true)
     props.onAdLoaded && props.onAdLoaded(e);
   };
 
@@ -78,6 +81,7 @@ export function GamBannerView(props: IProps) {
           },
           styles.container,
         ]}>
+          {!adLoaded ? <PlaceHolderView /> : null}
         <View style={transformStyle}>
           <Banner
             style={styles.bannerContainer}
