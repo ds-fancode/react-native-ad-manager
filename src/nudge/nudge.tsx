@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { ScrollView, View, ViewStyle } from 'react-native';
+import { getAdSize } from 'react-native-ad-manager/src/banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
 import type { INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
@@ -17,15 +18,18 @@ export function GAMNudge(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
+  console.log("GAM: adrequest: ", adRequest)
   function getNetworkResponse() {
     if (!isAdRequestMade) {
       fetchQuery(props.adProperties)
         .then((res: INudgeResponse) => {
+          console.log("GAM: Res: ", res, props.adProperties)
           setAdRequest({ data: res, isError: false })
         })
         .catch((err: any) => {
           setAdRequest({ isError: true })
           setIsGamError(true)
+          console.log('E: ', err);
         });
       // @Todo: Handle error
       setIsAdRequestMade(true)
@@ -40,12 +44,12 @@ export function GAMNudge(props: IProps) {
     <View>
       <ScrollView horizontal>{
         adRequest.data?.data.nudgeSegment.edges.map((nudgeEdge, idx) => {
-          const { adunitID, aspectRatio } = nudgeEdge
+          const { adunitID, adWidth , aspectRatio } = nudgeEdge
+          // console.log("GAM: adnudge: ", adunitID, aspectRatio, props.adProperties)
           return <GamBannerView
             key={idx}
             adunitID={adunitID}
-            adSize={aspectRatio}
-            adProperties={{}}
+            adSize={getAdSize(adWidth, aspectRatio)}
             containerSize={props.containerSize || '320x80'}
             gamContainerStyle={props.gamContainerStyle}
           />

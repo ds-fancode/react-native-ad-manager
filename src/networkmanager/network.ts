@@ -1,4 +1,4 @@
-import { AdNudgeResponse } from "src/__tests__/mocks";
+// import { AdNudgeResponse } from "src/__tests__/mocks";
 import type { INudge } from "../interfaces/AdTypes";
 
 
@@ -37,8 +37,6 @@ export const fetchQuery = (nudgeVariables: INudge) => {
           }`,
     }),
   })
-    // .then(res => res.json())
-    .then(_ => {
-      return AdNudgeResponse
-    })
+    .then(res => res.json())
+    // .then(_ => AdNudgeResponse)
 };

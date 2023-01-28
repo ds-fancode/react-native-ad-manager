@@ -38,6 +38,7 @@ export function GamBannerView(props: IProps) {
   const [isGAMError, setIsGamError] = React.useState(false)
 
   const onAdfailed = (e: any) => {
+    console.log('GAM: onAdfailed sdk: ', e, adUnitID);
     setIsGamError(true)
     props.onAdFailed && props.onAdFailed(e);
   };
@@ -47,6 +48,7 @@ export function GamBannerView(props: IProps) {
   };
 
   const onAdLoad = (e: any) => {
+    console.log('GAM: onAdLoad sdk: ', e, adUnitID);
     props.onAdLoaded && props.onAdLoaded(e);
   };
 
@@ -62,6 +64,9 @@ export function GamBannerView(props: IProps) {
   );
 
 
+
+  console.log("GAM: Ad: ", adUnitID, isGAMError, adSize, adWidth, adHeight)
+
   return adUnitID ?
     isGAMError ? null : (
       <View
@@ -69,8 +74,7 @@ export function GamBannerView(props: IProps) {
           {
             ...props.gamContainerStyle,
             width: containerWidth,
-            height: containerHeight,
-            backgroundColor: '#00000011'
+            height: containerHeight
           },
           styles.container,
         ]}>
