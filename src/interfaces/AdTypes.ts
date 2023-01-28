@@ -46,6 +46,7 @@ export interface INudge {
     medium?: string | null;
     isTvHomePage?: boolean | null;
     slug?: string | null;
+    adIdentity: string;
 }
 
 export interface INudgeResponse {
@@ -66,7 +67,7 @@ export interface SelectionOnEdges {
     adWidth: number
     aspectRatio: string
     gamType: GamType | null;
-  nativeAdUnitID: string | null;
+    nativeAdUnitID: string | null;
   }
   
   export interface SelectionOnNudgeSegment {
