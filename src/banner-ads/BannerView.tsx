@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Text, StyleSheet, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
@@ -8,6 +8,7 @@ import {
   getTransformationStyle,
   getWidthHeight,
 } from './utils';
+import DefaultBanner from './DefaultBanner'
 
 interface IProps {
   containerSize: string;
@@ -18,6 +19,7 @@ interface IProps {
   adunitID?: string
   adSize?: string
   adUnitList?: AD_UNIT_LIST;
+  defaultBannerdata?: any
 }
 
 export function GamBannerView(props: IProps) {
@@ -46,6 +48,7 @@ export function GamBannerView(props: IProps) {
   };
 
   const onAdOpened = () => {
+    console.log('GAM: onAdOpened sdk: ', adUnitID);
     props.onAdClicked && props.onAdClicked();
   };
 
@@ -66,34 +69,38 @@ export function GamBannerView(props: IProps) {
     [containerWidth, containerHeight],
   );
 
-
-
   console.log("GAM: Ad: ", adUnitID, isGAMError, adSize, adWidth, adHeight)
 
   return adUnitID ?
-    isGAMError ? null : (
+    (
       <View
         style={[
           {
             ...props.gamContainerStyle,
             width: containerWidth,
-            height: containerHeight
+            height: containerHeight,
           },
           styles.container,
         ]}>
-          {!adLoaded ? <PlaceHolderView /> : null}
-        <View style={transformStyle}>
-          <Banner
-            style={styles.bannerContainer}
-            onAdFailedToLoad={onAdfailed}
-            onAdOpened={onAdOpened}
-            adSize={`${adWidth}x${adHeight}` as any}
-            onAdLoaded={onAdLoad}
-            validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
-            adUnitID={adUnitID}
-            testDevices={[Interstitial.simulatorId]}
-          />
-        </View>
+
+        {!adLoaded ? <PlaceHolderView /> : null}
+        <Text
+          style={styles.placeholderAd}
+          children="Ad"
+        />
+        {isGAMError ? <DefaultBanner width={adWidth} height={adHeight} {...props.defaultBannerdata} /> :
+          <View style={transformStyle}>
+            <Banner
+              style={styles.bannerContainer}
+              onAdFailedToLoad={onAdfailed}
+              onAdOpened={onAdOpened}
+              adSize={`${adWidth}x${adHeight}` as any}
+              onAdLoaded={onAdLoad}
+              validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
+              adUnitID={adUnitID}
+              testDevices={[Interstitial.simulatorId]}
+            />
+          </View>}
       </View>
     ) : null;
 }
@@ -114,5 +121,21 @@ const styles = StyleSheet.create({
     left: 0,
     width: 200,
     height: 100,
+  },
+  placeholderAd: {
+    backgroundColor: '#FBAB33',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    margin: 12,
+    paddingHorizontal: 4,
+    borderRadius: 2,
+    zIndex: 10,
+    color: '#121212',
+    fontFamily: 'Noto Sans Display',
+    fontSize: 11,
+    fontWeight: '500',
+    lineHeight: 16,
+    letterSpacing: 0.2
   },
 });

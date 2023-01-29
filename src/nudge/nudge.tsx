@@ -45,13 +45,16 @@ export function GAMNudge(props: IProps) {
       <ScrollView horizontal>{
         adRequest.data?.data.nudgeSegment.edges.map((nudgeEdge, idx) => {
           const { adunitID, adWidth , aspectRatio } = nudgeEdge
-          // console.log("GAM: adnudge: ", adunitID, aspectRatio, props.adProperties)
           return <GamBannerView
             key={idx}
             adunitID={adunitID}
             adSize={getAdSize(adWidth, aspectRatio)}
             containerSize={props.containerSize || '320x80'}
             gamContainerStyle={props.gamContainerStyle}
+            defaultBannerdata={{
+              imagesrc: nudgeEdge.artwork.src,
+              link: nudgeEdge.navigationLink
+            }}
           />
         })
       }</ScrollView>
