@@ -4,7 +4,7 @@ import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
 import { IGamProperties, BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
-import { gamADConfiguration } from 'react-native-ad-manager/src/adConfig';
+import { gamADConfiguration } from '../adConfig';
 
 interface IProps {
   containerSize: string;
@@ -25,23 +25,19 @@ export function GAMNudge(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
-  console.log("GAM: adrequest: ", adRequest, gamADConfiguration.getEndpoint(), gamADConfiguration.isGAMAdEnabled())
-  function getNetworkResponse() {
+  const getNetworkResponse = React.useCallback(() => {
     if (!isAdRequestMade && gamADConfiguration.isGAMAdEnabled()) {
       fetchQuery(props.adProperties)
         .then((res: INudgeResponse) => {
-          console.log("GAM: Res: ", res, props.adProperties)
           setAdRequest({ data: res, isError: false })
         })
-        .catch((err: any) => {
+        .catch(() => {
           setAdRequest({ isError: true })
           setIsGamError(true)
-          console.log('E: ', err);
-        });
-      // @Todo: Handle error
+        })
       setIsAdRequestMade(true)
     }
-  }
+  }, [])
 
   useEffect(() => {
     getNetworkResponse()

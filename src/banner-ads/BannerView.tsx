@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
@@ -33,13 +33,6 @@ export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false)
-  // Below line find nearest size ad from list of adIds
-  // const adIDindex = getAdUnitID(
-  //   props.adUnitList,
-  //   containerWidth,
-  //   containerHeight,
-  // );
-  //   const {id: adUnitID, size: adSize} = props.adUnitList[adIDindex.index]; 
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || ''
@@ -57,28 +50,32 @@ export function GamBannerView(props: IProps) {
       adType: 'Banner',
       bannerProperties: props.bannerProperties
     }
-  }, [])
+  }, [props.index, adUnitID])
 
-  const onAdfailed = (error: any) => {
-    console.log('GAM: onAdfailed sdk: ', error, adUnitID);
+  const onAdfailed = React.useCallback((error: any) => {
     setIsGamError(true)
     setIsAdLoaded(true)
     props.onAdFailed && props.onAdFailed({
       errormessage: error?.toString(),
       ...gamProperties,
     });
-  };
+  }, [])
 
-  const onAdOpened = () => {
-    console.log('GAM: onAdOpened sdk: ', adUnitID);
+  const onAdOpened = React.useCallback(() => {
     props.onAdClicked && props.onAdClicked(gamProperties);
-  };
+  }, [])
 
-  const onAdLoad = (e: any) => {
-    console.log('GAM: onAdLoad sdk: ', e, adUnitID);
+  const onAdLoad = React.useCallback(() => {
     setIsAdLoaded(true)
     props.onAdLoaded && props.onAdLoaded(gamProperties);
-  };
+  }, [])
+
+  const onDefaultClick = React.useCallback(() => {
+    props.onAdClicked && props.onAdClicked({
+      ...gamProperties,
+      type: 'DEFAULT',
+    })
+  }, [])
 
   const transformStyle = React.useMemo(
     () =>
@@ -95,31 +92,22 @@ export function GamBannerView(props: IProps) {
     props.onBannerAttempt && props.onBannerAttempt({...gamProperties})
   }, [])
 
-  console.log("GAM: Ad: ", adUnitID, isGAMError, adSize, adWidth, adHeight)
+  const containerStyles = React.useMemo(() => {
+    return [
+      props.gamContainerStyle,
+      {
+        width: containerWidth,
+        height: containerHeight
+      },
+      styles.container,
+    ]
+  }, [])
 
   return (
-    <View
-      style={[
-        {
-          ...props.gamContainerStyle,
-          width: containerWidth,
-          height: containerHeight
-        },
-        styles.container,
-      ]}>
-
+    <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
-      <Text
-        style={styles.placeholderAd}
-        children="Ad"
-      />
       {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={() => {
-          props.onAdClicked && props.onAdClicked({
-            ...gamProperties,
-            type: 'DEFAULT',
-          })
-        }}/> :
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick}/> :
         <View style={transformStyle}>
           <Banner
             style={styles.bannerContainer}
@@ -134,7 +122,6 @@ export function GamBannerView(props: IProps) {
         </View>}
     </View>
   )
-
 }
 
 const styles = StyleSheet.create({

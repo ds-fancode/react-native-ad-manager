@@ -4,8 +4,7 @@ import React from 'react'
 export const PlaceHolderView = () => {
     return (
         <View style={styles.placeholderTextContainer}>
-
-            <View style={{}}>
+            <View>
                 <ActivityIndicator
                     size={22}
                     color={'#ff5000'}
@@ -13,14 +12,7 @@ export const PlaceHolderView = () => {
             </View>
             <Text
                 children="Ad is Loading..."
-                style={{
-                    fontFamily: 'Noto Sans Display',
-                    fontSize: 11,
-                    fontWeight: '500',
-                    lineHeight: 16,
-                    letterSpacing: 0.2,
-                    color: '#c8c8c8'
-                }}
+                style={styles.loading}
             />
         </View>
 
@@ -35,4 +27,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 12
     },
+    loading: {
+        fontFamily: 'Noto Sans Display',
+        fontSize: 11,
+        fontWeight: '500',
+        lineHeight: 16,
+        letterSpacing: 0.2,
+        color: '#c8c8c8'
+    }
 })

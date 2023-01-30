@@ -1,7 +1,8 @@
+import { gamADConfiguration } from "../adConfig";
 import type { INudge } from "../interfaces/AdTypes";
 
 export const fetchQuery = (nudgeVariables: INudge) => {
-  return fetch('https://eng-01.fancodedev.com/graphql', {
+  return fetch(gamADConfiguration.getEndpoint(), {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
@@ -36,11 +37,11 @@ export const fetchQuery = (nudgeVariables: INudge) => {
     }),
   })
     .then(res => res.json())
-    // .then(_ => AdNudgeResponse)
+    // .then(_ => AdNudgeResponseMocks)
 };
 
 
-export const AdNudgeResponse = {
+export const AdNudgeResponseMocks = {
   data: {
     nudgeSegment: {
       edges: [
@@ -59,6 +60,7 @@ export const AdNudgeResponse = {
           aspectRatio: '300:250', // change x into :
           gamType: "DEFAULT",
           nativeAdUnitID: "",
+          type: 'GAM'
         },
         {
           id: 123,
@@ -75,6 +77,7 @@ export const AdNudgeResponse = {
           aspectRatio: '320:50',
           gamType: "DEFAULT",
           nativeAdUnitID: "",
+          type: 'GAM'
         },
         {
           id: 123,
@@ -91,6 +94,7 @@ export const AdNudgeResponse = {
           aspectRatio: '320:50', // change x into :
           gamType: "DEFAULT",
           nativeAdUnitID: "",
+          type: 'GAM'
         },
       ]
     }

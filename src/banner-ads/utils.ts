@@ -37,15 +37,6 @@ export function getAspectRatio(size: string) {
   return width / height;
 }
 
-/*
-    AD_UNIT_LIST provides list of ad unit ids
-    e.g: [
-        {id: '/22693816480/nativebanner', size: '300x250'},
-        {id: '/22693816480/nativebanner', size: '1200x600'},
-        {id: '/22693816480/banner//video', size: '320x50'},
-    ]
-*/
-
 export type AD_UNIT_LIST = Array<{ id: string; size: string }>;
 
 export function getAdUnitID(

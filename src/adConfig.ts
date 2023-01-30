@@ -12,7 +12,6 @@ class AdConfiguration {
         this.isGAMEnabled = true
     }
     updateValue(options: IAdConfig) {
-        console.log("GAM: options: ", options)
         if(options.endPoint) {
             this.endPoint = options.endPoint
         }
