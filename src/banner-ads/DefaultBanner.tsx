@@ -2,9 +2,9 @@ import React from 'react'
 import { Linking, Image, TouchableOpacity } from 'react-native'
 
 interface IProps {
-    width: number, height: number
     link?: string
     imagesrc?: string
+    style?: any
 }
 
 
@@ -20,11 +20,9 @@ export default function DefaultBanner(props: IProps) {
                 source={{
                     uri: props.imagesrc
                 }}
-                style={{
-                    width: props.width,
-                    height: props.height,
+                style={[{
                     resizeMode: 'stretch'
-                }}
+                }, props.style]}
             ></Image></TouchableOpacity>
     )
 }

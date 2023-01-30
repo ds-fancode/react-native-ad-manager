@@ -19,7 +19,10 @@ interface IProps {
   adunitID?: string
   adSize?: string
   adUnitList?: AD_UNIT_LIST;
-  defaultBannerdata?: any
+  defaultBannerdata?: {
+    imagesrc?: string
+    link?: string
+  }
 }
 
 export function GamBannerView(props: IProps) {
@@ -88,7 +91,7 @@ export function GamBannerView(props: IProps) {
           style={styles.placeholderAd}
           children="Ad"
         />
-        {isGAMError ? <DefaultBanner width={adWidth} height={adHeight} {...props.defaultBannerdata} /> :
+        {isGAMError ? <DefaultBanner style={transformStyle} {...props.defaultBannerdata} /> :
           <View style={transformStyle}>
             <Banner
               style={styles.bannerContainer}
