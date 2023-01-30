@@ -2,13 +2,20 @@ import React, { useEffect } from 'react'
 import { FlatList, View, ViewStyle } from 'react-native';
 import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
-import { BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
+import { IGamProperties, BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
+import { gamADConfiguration } from 'react-native-ad-manager/src/adConfig';
 
 interface IProps {
   containerSize: string;
   adProperties: INudge
   gamContainerStyle?: ViewStyle
+  adCallbacks?: {
+    onLoad?: (e: IGamProperties) => void
+    onError?: (e: IGamProperties) => void
+    onClick?: (e: IGamProperties) => void
+    onBannerAttempt?: (e: IGamProperties) => void
+  }
 }
 
 
@@ -18,9 +25,9 @@ export function GAMNudge(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
-  console.log("GAM: adrequest: ", adRequest)
+  console.log("GAM: adrequest: ", adRequest, gamADConfiguration.getEndpoint(), gamADConfiguration.isGAMAdEnabled())
   function getNetworkResponse() {
-    if (!isAdRequestMade) {
+    if (!isAdRequestMade && gamADConfiguration.isGAMAdEnabled()) {
       fetchQuery(props.adProperties)
         .then((res: INudgeResponse) => {
           console.log("GAM: Res: ", res, props.adProperties)
@@ -40,6 +47,10 @@ export function GAMNudge(props: IProps) {
     getNetworkResponse()
   }, [])
 
+  if (!gamADConfiguration.isGAMAdEnabled()) {
+    return null
+  }
+
   return isGAMError ? null :
     (
       <View>
@@ -57,6 +68,17 @@ export function GAMNudge(props: IProps) {
                 link: item.item.navigationLink
               }}
               showGamBanner={item.item.type === BannerType.GAM}
+              onAdClicked={props.adCallbacks?.onClick}
+              onAdFailed={props.adCallbacks?.onError}
+              onAdLoaded={props.adCallbacks?.onLoad}
+              onBannerAttempt={props.adCallbacks?.onBannerAttempt}
+              adProperties={props.adProperties}
+              index={item.index}
+              bannerProperties={{
+                isAd: item.item.isAd,
+                title: item.item.title,
+                id: item.item.id
+              }}
             />
           }}
           data={adRequest.data?.data.nudgeSegment.edges}

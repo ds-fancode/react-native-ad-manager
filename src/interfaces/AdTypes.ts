@@ -83,3 +83,16 @@ export interface SelectionOnNudgeSegment {
 export interface INudgeSegmentResponse {
   nudgeSegment: SelectionOnNudgeSegment;
 }
+
+export type IBannerProperties = Pick<SelectionOnEdges, 'title' | 'isAd' | 'id'>
+
+export interface IGamProperties {
+  adProperties: INudge
+  nudgeIndex: number
+  adUnitId: string
+  bannerSize: string
+  type: string
+  adType: string
+  errormessage?: string
+  bannerProperties?: IBannerProperties
+}

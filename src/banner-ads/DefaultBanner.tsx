@@ -5,12 +5,14 @@ interface IProps {
     link?: string
     imagesrc?: string
     style?: any
+    onClick?: () => void;
 }
 
 
 export default function DefaultBanner(props: IProps) {
     function onClick() {
         if (props.link) {
+            props.onClick && props.onClick()
             Linking.openURL(props.link).then().catch()
         }
     }

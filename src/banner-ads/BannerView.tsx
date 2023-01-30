@@ -4,26 +4,29 @@ import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
 import {
-  AD_UNIT_LIST,
   getTransformationStyle,
   getWidthHeight,
 } from './utils';
 import DefaultBanner from './DefaultBanner'
+import {IBannerProperties, IGamProperties, INudge } from '../interfaces/AdTypes';
 
 interface IProps {
   containerSize: string;
-  onAdLoaded?: (e: any) => void;
-  onAdFailed?: (e: any) => void;
-  onAdClicked?: () => void;
+  onAdLoaded?: (e: IGamProperties) => void;
+  onAdFailed?: (e: IGamProperties) => void;
+  onAdClicked?: (e: IGamProperties) => void;
+  onBannerAttempt?: (e: IGamProperties) => void
   gamContainerStyle?: any;
   adunitID?: string
   adSize?: string
-  adUnitList?: AD_UNIT_LIST;
   defaultBannerdata?: {
     imagesrc?: string
     link?: string
   }
   showGamBanner: boolean
+  adProperties: INudge
+  index: number
+  bannerProperties: IBannerProperties
 }
 
 export function GamBannerView(props: IProps) {
@@ -44,22 +47,37 @@ export function GamBannerView(props: IProps) {
   const [adWidth, adHeight] = getWidthHeight(adSize);
   const [isGAMError, setIsGamError] = React.useState(false)
 
-  const onAdfailed = (e: any) => {
-    console.log('GAM: onAdfailed sdk: ', e, adUnitID);
+  const gamProperties = React.useMemo(() => {
+    return {
+      adProperties: props.adProperties,
+      nudgeIndex: props.index,
+      adUnitId: adUnitID,
+      bannerSize: adSize,
+      type: props.showGamBanner ? 'GAM' : 'DEFAULT',
+      adType: 'Banner',
+      bannerProperties: props.bannerProperties
+    }
+  }, [])
+
+  const onAdfailed = (error: any) => {
+    console.log('GAM: onAdfailed sdk: ', error, adUnitID);
     setIsGamError(true)
     setIsAdLoaded(true)
-    props.onAdFailed && props.onAdFailed(e);
+    props.onAdFailed && props.onAdFailed({
+      errormessage: error?.toString(),
+      ...gamProperties,
+    });
   };
 
   const onAdOpened = () => {
     console.log('GAM: onAdOpened sdk: ', adUnitID);
-    props.onAdClicked && props.onAdClicked();
+    props.onAdClicked && props.onAdClicked(gamProperties);
   };
 
   const onAdLoad = (e: any) => {
     console.log('GAM: onAdLoad sdk: ', e, adUnitID);
     setIsAdLoaded(true)
-    props.onAdLoaded && props.onAdLoaded(e);
+    props.onAdLoaded && props.onAdLoaded(gamProperties);
   };
 
   const transformStyle = React.useMemo(
@@ -73,41 +91,50 @@ export function GamBannerView(props: IProps) {
     [containerWidth, containerHeight],
   );
 
+  React.useEffect(() => {
+    props.onBannerAttempt && props.onBannerAttempt({...gamProperties})
+  }, [])
+
   console.log("GAM: Ad: ", adUnitID, isGAMError, adSize, adWidth, adHeight)
 
-  return adUnitID ?
-    (
-      <View
-        style={[
-          {
-            ...props.gamContainerStyle,
-            width: containerWidth,
-            height: containerHeight
-          },
-          styles.container,
-        ]}>
+  return (
+    <View
+      style={[
+        {
+          ...props.gamContainerStyle,
+          width: containerWidth,
+          height: containerHeight
+        },
+        styles.container,
+      ]}>
 
-        {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
-        <Text
-          style={styles.placeholderAd}
-          children="Ad"
-        />
-        {isGAMError || !props.showGamBanner ?
-          <DefaultBanner style={transformStyle} {...props.defaultBannerdata} /> :
-          <View style={transformStyle}>
-            <Banner
-              style={styles.bannerContainer}
-              onAdFailedToLoad={onAdfailed}
-              onAdOpened={onAdOpened}
-              adSize={`${adWidth}x${adHeight}` as any}
-              onAdLoaded={onAdLoad}
-              validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
-              adUnitID={adUnitID}
-              testDevices={[Interstitial.simulatorId]}
-            />
-          </View>}
-      </View>
-    ) : null;
+      {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
+      <Text
+        style={styles.placeholderAd}
+        children="Ad"
+      />
+      {isGAMError || !props.showGamBanner || !adUnitID ?
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={() => {
+          props.onAdClicked && props.onAdClicked({
+            ...gamProperties,
+            type: 'DEFAULT',
+          })
+        }}/> :
+        <View style={transformStyle}>
+          <Banner
+            style={styles.bannerContainer}
+            onAdFailedToLoad={onAdfailed}
+            onAdOpened={onAdOpened}
+            adSize={`${adWidth}x${adHeight}` as any}
+            onAdLoaded={onAdLoad}
+            validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
+            adUnitID={adUnitID}
+            testDevices={[Interstitial.simulatorId]}
+          />
+        </View>}
+    </View>
+  )
+
 }
 
 const styles = StyleSheet.create({
