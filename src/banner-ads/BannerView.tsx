@@ -23,6 +23,7 @@ interface IProps {
     imagesrc?: string
     link?: string
   }
+  showGamBanner: boolean
 }
 
 export function GamBannerView(props: IProps) {
@@ -81,17 +82,18 @@ export function GamBannerView(props: IProps) {
           {
             ...props.gamContainerStyle,
             width: containerWidth,
-            height: containerHeight,
+            height: containerHeight
           },
           styles.container,
         ]}>
 
-        {!adLoaded ? <PlaceHolderView /> : null}
+        {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
         <Text
           style={styles.placeholderAd}
           children="Ad"
         />
-        {isGAMError ? <DefaultBanner style={transformStyle} {...props.defaultBannerdata} /> :
+        {isGAMError || !props.showGamBanner ?
+          <DefaultBanner style={transformStyle} {...props.defaultBannerdata} /> :
           <View style={transformStyle}>
             <Banner
               style={styles.bannerContainer}

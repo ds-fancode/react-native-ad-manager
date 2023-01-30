@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
-import { ScrollView, View, ViewStyle } from 'react-native';
-import { getAdSize } from 'react-native-ad-manager/src/banner-ads/utils';
+import { FlatList, View, ViewStyle } from 'react-native';
+import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
-import type { INudge, INudgeResponse } from '../interfaces/AdTypes';
+import { BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
 
 interface IProps {
@@ -40,24 +40,29 @@ export function GAMNudge(props: IProps) {
     getNetworkResponse()
   }, [])
 
-  return isGAMError ? null : (
-    <View>
-      <ScrollView horizontal>{
-        adRequest.data?.data.nudgeSegment.edges.map((nudgeEdge, idx) => {
-          const { adunitID, adWidth , aspectRatio } = nudgeEdge
-          return <GamBannerView
-            key={idx}
-            adunitID={adunitID}
-            adSize={getAdSize(adWidth, aspectRatio)}
-            containerSize={props.containerSize || '320x80'}
-            gamContainerStyle={props.gamContainerStyle}
-            defaultBannerdata={{
-              imagesrc: nudgeEdge.artwork.src,
-              link: nudgeEdge.navigationLink
-            }}
-          />
-        })
-      }</ScrollView>
-    </View>
-  )
+  return isGAMError ? null :
+    (
+      <View>
+        <FlatList
+          renderItem={(item) => {
+            const { adunitID, adWidth, aspectRatio } = item.item
+            return <GamBannerView
+              key={item.index}
+              adunitID={adunitID}
+              adSize={getAdSize(adWidth, aspectRatio)}
+              containerSize={props.containerSize || '320x80'}
+              gamContainerStyle={props.gamContainerStyle}
+              defaultBannerdata={{
+                imagesrc: item.item.artwork.src,
+                link: item.item.navigationLink
+              }}
+              showGamBanner={item.item.type === BannerType.GAM}
+            />
+          }}
+          data={adRequest.data?.data.nudgeSegment.edges}
+          horizontal
+        >
+        </FlatList>
+      </View>
+    )
 }
