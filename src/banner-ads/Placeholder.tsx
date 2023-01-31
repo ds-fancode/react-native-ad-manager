@@ -1,5 +1,6 @@
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native"
-import React from 'react'
+import * as React from 'react'
+import { gamADConfiguration } from "../adConfig"
 
 export const PlaceHolderView = () => {
     return (
@@ -12,7 +13,8 @@ export const PlaceHolderView = () => {
             </View>
             <Text
                 children="Ad is Loading..."
-                style={styles.loading}
+                style={[styles.loading, { color: gamADConfiguration.getThemeColor().loaderText }]}
+
             />
         </View>
 
@@ -32,7 +34,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontWeight: '500',
         lineHeight: 16,
-        letterSpacing: 0.2,
-        color: '#c8c8c8'
+        letterSpacing: 0.2
     }
 })

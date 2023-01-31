@@ -16,17 +16,16 @@ interface IProps {
     onClick?: (e: IGamProperties) => void
     onBannerAttempt?: (e: IGamProperties) => void
   }
+  isRefreshing?: boolean
 }
 
 
 export function GAMNudge(props: IProps) {
-
-  const [isAdRequestMade, setIsAdRequestMade] = React.useState(false)
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
   const getNetworkResponse = React.useCallback(() => {
-    if (!isAdRequestMade && gamADConfiguration.isGAMAdEnabled()) {
+    if (gamADConfiguration.isGAMAdEnabled()) {
       fetchQuery(props.adProperties)
         .then((res: INudgeResponse) => {
           setAdRequest({ data: res, isError: false })
@@ -35,13 +34,14 @@ export function GAMNudge(props: IProps) {
           setAdRequest({ isError: true })
           setIsGamError(true)
         })
-      setIsAdRequestMade(true)
     }
   }, [])
 
   useEffect(() => {
-    getNetworkResponse()
-  }, [])
+    if (!props.isRefreshing) {
+      getNetworkResponse()
+    }
+  }, [props.isRefreshing])
 
   if (!gamADConfiguration.isGAMAdEnabled()) {
     return null
@@ -51,10 +51,10 @@ export function GAMNudge(props: IProps) {
     (
       <View>
         <FlatList
+          showsHorizontalScrollIndicator={false}
           renderItem={(item) => {
             const { adunitID, adWidth, aspectRatio } = item.item
             return <GamBannerView
-              key={item.index}
               adunitID={adunitID}
               adSize={getAdSize(adWidth, aspectRatio)}
               containerSize={props.containerSize || '320x80'}
@@ -79,6 +79,9 @@ export function GAMNudge(props: IProps) {
           }}
           data={adRequest.data?.data.nudgeSegment.edges}
           horizontal
+          keyExtractor={(item) => {
+            return item.id + item.adunitID
+          }}
         >
         </FlatList>
       </View>

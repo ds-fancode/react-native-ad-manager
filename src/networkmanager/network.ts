@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { gamADConfiguration } from "../adConfig";
 import type { INudge } from "../interfaces/AdTypes";
 
@@ -6,42 +7,23 @@ export const fetchQuery = (nudgeVariables: INudge) => {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
+      source: Platform.OS === 'ios' ? 'sportsguruios' : 'sportsguruand'
     },
     body: JSON.stringify({
       "variables": {
         "input": nudgeVariables
       },
       "query":
-        `query NudgeSegment($input: SegmentFilter!) {
-            nudgeSegment(input: $input) {
-              edges {
-                id
-                title
-                isAd
-                navigationLink
-                artwork {
-                  src
-                }
-                isExternal
-                bannerStartDate
-                bannerEndDate
-                impressionLink
-                type
-                adunitID
-                adWidth
-                aspectRatio
-                type
-              }
-            }
-          }`,
+        `query NudgeSegment($input: SegmentFilter!) { nudgeSegment(input: $input) { edges { id title isAd navigationLink artwork { src } isExternal bannerStartDate bannerEndDate impressionLink type adunitID adWidth aspectRatio type } }}`,
     }),
   })
     .then(res => res.json())
-    // .then(_ => AdNudgeResponseMocks)
+    // .then(_ => AdNudgeResponseMocks())
 };
 
+// const id = ['/22693816480/nativebanner', '/22693816480/dream11-football', '/6499/example/banner']
 
-export const AdNudgeResponseMocks = {
+export const AdNudgeResponseMocks = () => ({
   data: {
     nudgeSegment: {
       edges: [
@@ -55,7 +37,7 @@ export const AdNudgeResponseMocks = {
           bannerStartDate: '',
           bannerEndDate: '',
           impressionLink: '/6499/example/banner',
-          adunitID: '/22693816480/nativebanner' || '/22693816480/dream11-football',
+          adunitID: '/22693816480/nativebanner',
           adWidth: 300,
           aspectRatio: '300:250', // change x into :
           gamType: "DEFAULT",
@@ -63,7 +45,7 @@ export const AdNudgeResponseMocks = {
           type: 'GAM'
         },
         {
-          id: 123,
+          id: 124,
           title: '123',
           isAd: true,
           navigationLink: 'https://www.fancode.com/match/25027',
@@ -80,7 +62,7 @@ export const AdNudgeResponseMocks = {
           type: 'GAM'
         },
         {
-          id: 123,
+          id: 125,
           title: '123',
           isAd: true,
           navigationLink: 'https://www.fancode.com/match/25027',
@@ -99,4 +81,4 @@ export const AdNudgeResponseMocks = {
       ]
     }
   }
-}
+})
