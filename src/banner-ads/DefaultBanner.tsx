@@ -17,6 +17,10 @@ export default function DefaultBanner(props: IProps) {
             Linking.openURL(props.link).then().catch()
         }
     }
+    const imageStyle = React.useMemo(() => ([{
+        resizeMode: 'stretch'
+    }, props.style]), [props.style])
+
     return (
         <TouchableOpacity 
         onPress={onClick} 
@@ -26,9 +30,7 @@ export default function DefaultBanner(props: IProps) {
                 source={{
                     uri: props.imagesrc
                 }}
-                style={[{
-                    resizeMode: 'stretch'
-                }, props.style]}
+                style={imageStyle}
             ></Image></TouchableOpacity>
     )
 }

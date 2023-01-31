@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import * as React from 'react'
 import { FlatList, View, ViewStyle } from 'react-native';
 import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
@@ -37,7 +37,7 @@ export function GAMNudge(props: IProps) {
     }
   }, [])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!props.isRefreshing) {
       getNetworkResponse()
     }
