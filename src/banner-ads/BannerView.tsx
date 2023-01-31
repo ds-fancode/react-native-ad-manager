@@ -107,7 +107,7 @@ export function GamBannerView(props: IProps) {
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
       {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick}/> :
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index}/> :
         <View style={transformStyle}>
           <Banner
             style={styles.bannerContainer}
