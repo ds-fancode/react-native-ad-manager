@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Text, ViewProps } from 'react-native';
 import type { TReactNodeHandleRef } from '../AdManagerTypes';
 

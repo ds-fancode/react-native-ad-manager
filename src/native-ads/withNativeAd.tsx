@@ -1,4 +1,4 @@
-import React, { JSXElementConstructor } from 'react';
+import * as React from 'react';
 import {
   findNodeHandle,
   NativeSyntheticEvent,
@@ -112,7 +112,7 @@ const NativeAdView =
         throw new Error(LINKING_ERROR);
       };
 
-export default (Component: JSXElementConstructor<any>) =>
+export default (Component: React.JSXElementConstructor<any>) =>
   class NativeAdWrapper extends React.Component<
     INativeAdProps,
     INativeAdState
