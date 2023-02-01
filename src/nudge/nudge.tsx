@@ -70,11 +70,7 @@ export function GAMNudge(props: IProps) {
               onBannerAttempt={props.adCallbacks?.onBannerAttempt}
               adProperties={props.adProperties}
               index={item.index}
-              bannerProperties={{
-                isAd: item.item.isAd,
-                title: item.item.title,
-                id: item.item.id
-              }}
+              bannerProperties={item.item}
             />
           }}
           data={adRequest.data?.data.nudgeSegment.edges}

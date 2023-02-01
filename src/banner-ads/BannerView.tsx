@@ -8,7 +8,7 @@ import {
   getWidthHeight,
 } from './utils';
 import DefaultBanner from './DefaultBanner'
-import {IBannerProperties, IGamProperties, INudge } from '../interfaces/AdTypes';
+import {IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
 
 interface IProps {
   containerSize: string;
@@ -17,11 +17,12 @@ interface IProps {
   onAdClicked?: (e: IGamProperties) => void;
   onBannerAttempt?: (e: IGamProperties) => void
   gamContainerStyle?: any;
-  adunitID?: string
+  adunitID?: string | null
   adSize?: string
   defaultBannerdata?: {
     imagesrc?: string
     link?: string
+    onClickDefault?: (e: any, p: SelectionOnEdges) => void
   }
   showGamBanner: boolean
   adProperties: INudge
@@ -71,10 +72,14 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const onDefaultClick = React.useCallback(() => {
-    props.onAdClicked && props.onAdClicked({
-      ...gamProperties,
-      type: 'DEFAULT',
-    })
+    if(props.defaultBannerdata?.onClickDefault) {
+      props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
+    } else {
+      props.onAdClicked && props.onAdClicked({
+        ...gamProperties,
+        type: 'DEFAULT',
+      })
+    }
   }, [])
 
   const transformStyle = React.useMemo(
