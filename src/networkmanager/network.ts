@@ -18,11 +18,10 @@ export const fetchQuery = (nudgeVariables: INudge) => {
     }),
   })
     .then(res => res.json())
-    // .then(_ => AdNudgeResponseMocks())
 };
 
-// const id = ['/22693816480/nativebanner', '/22693816480/dream11-football', '/6499/example/banner']
-
+// Needed for testing
+// Can be ignored
 export const AdNudgeResponseMocks = () => ({
   data: {
     nudgeSegment: {

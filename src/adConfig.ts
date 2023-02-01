@@ -7,6 +7,7 @@ interface IAdConfig {
     }
 }
 
+// Used to add initial config for ads
 class AdConfiguration {
     private endPoint: string
     private isGAMEnabled: boolean
@@ -14,12 +15,14 @@ class AdConfiguration {
         loaderText: string
      }
     constructor() {
+        // Default endpoint
         this.endPoint = 'https://www.fancode.com/graphql'
         this.isGAMEnabled = true
         this.themeColor = {
             loaderText: '#c8c8c8'
         }
     }
+    // update the endpoint when application is launched
     updateValue(options: IAdConfig) {
         if(options.endPoint) {
             this.endPoint = options.endPoint
