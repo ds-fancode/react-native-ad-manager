@@ -8,7 +8,7 @@ import {
   getWidthHeight,
 } from './utils';
 import DefaultBanner from './DefaultBanner'
-import {IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
+import { IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
 
 interface IProps {
   containerSize: string;
@@ -34,6 +34,7 @@ export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false)
+  const timeRef = React.useRef<{value:NodeJS.Timeout}>({value: null})
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || ''
@@ -72,7 +73,7 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const onDefaultClick = React.useCallback(() => {
-    if(props.defaultBannerdata?.onClickDefault) {
+    if (props.defaultBannerdata?.onClickDefault) {
       props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
     } else {
       props.onAdClicked && props.onAdClicked({
@@ -86,12 +87,16 @@ export function GamBannerView(props: IProps) {
 
   React.useEffect(() => {
     console.log('GAM INit:')
-    setTimeout(
+    timeRef.current.value = setTimeout(
       () => {
         console.log('GAM: showBanner:', showBanner)
+        if(showBanner) {
+          setIsGamError(false)
+          setIsAdLoaded(false)
+        }
         setShowBanner(_ => !showBanner)
       },
-      showBanner ? 10000 : 1000
+      showBanner ? 100000 : 1000
     )
   }, [showBanner])
 
@@ -107,7 +112,12 @@ export function GamBannerView(props: IProps) {
   );
 
   React.useEffect(() => {
-    props.onBannerAttempt && props.onBannerAttempt({...gamProperties})
+    props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties })
+    return () => {
+      if(timeRef.current.value) {
+        clearTimeout(timeRef.current.value)
+      }
+    }
   }, [])
 
   const containerStyles = React.useMemo(() => {
@@ -122,33 +132,31 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const BannerComponent = React.useMemo(
-      () => (
+    () => (
+      <View style={transformStyle}>
         <Banner
-            style={styles.bannerContainer}
-            onAdFailedToLoad={onAdfailed}
-            onAdOpened={onAdOpened}
-            adSize={`${adWidth}x${adHeight}` as any}
-            onAdLoaded={onAdLoad}
-            validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
-            adUnitID={adUnitID}
-            testDevices={[Interstitial.simulatorId]}
-          />
-      ),
-      []
-    )
+          style={styles.bannerContainer}
+          onAdFailedToLoad={onAdfailed}
+          onAdOpened={onAdOpened}
+          adSize={`${adWidth}x${adHeight}` as any}
+          onAdLoaded={onAdLoad}
+          validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
+          adUnitID={adUnitID}
+          testDevices={[Interstitial.simulatorId]}
+        />
+      </View>
+    ),
+    []
+  )
 
   return (
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
-      
+
       {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index}/> :
-        <View style={transformStyle}>
-          {
-            showBanner ? BannerComponent : <PlaceHolderView />
-          }
-        </View>}
-        <Text>{`showBanner`}</Text>
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index} /> :
+        showBanner ? BannerComponent : <PlaceHolderView />
+      }
     </View>
   )
 }
