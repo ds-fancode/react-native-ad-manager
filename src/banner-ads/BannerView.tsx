@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
@@ -82,6 +82,19 @@ export function GamBannerView(props: IProps) {
     }
   }, [])
 
+  const [showBanner, setShowBanner] = React.useState(true)
+
+  React.useEffect(() => {
+    console.log('GAM INit:')
+    setTimeout(
+      () => {
+        console.log('GAM: showBanner:', showBanner)
+        setShowBanner(_ => !showBanner)
+      },
+      showBanner ? 10000 : 1000
+    )
+  }, [showBanner])
+
   const transformStyle = React.useMemo(
     () =>
       getTransformationStyle(
@@ -108,13 +121,9 @@ export function GamBannerView(props: IProps) {
     ]
   }, [])
 
-  return (
-    <View style={containerStyles}>
-      {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
-      {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index}/> :
-        <View style={transformStyle}>
-          <Banner
+  const BannerComponent = React.useMemo(
+      () => (
+        <Banner
             style={styles.bannerContainer}
             onAdFailedToLoad={onAdfailed}
             onAdOpened={onAdOpened}
@@ -124,7 +133,22 @@ export function GamBannerView(props: IProps) {
             adUnitID={adUnitID}
             testDevices={[Interstitial.simulatorId]}
           />
+      ),
+      []
+    )
+
+  return (
+    <View style={containerStyles}>
+      {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
+      
+      {isGAMError || !props.showGamBanner || !adUnitID ?
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index}/> :
+        <View style={transformStyle}>
+          {
+            showBanner ? BannerComponent : <PlaceHolderView />
+          }
         </View>}
+        <Text>{`showBanner`}</Text>
     </View>
   )
 }
