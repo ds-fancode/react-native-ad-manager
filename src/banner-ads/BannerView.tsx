@@ -35,7 +35,7 @@ export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false)
-  const timeRef = React.useRef<{value:NodeJS.Timeout}>({value: null})
+  const timeRef = React.useRef<{value: any}>({value: null})
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || ''
