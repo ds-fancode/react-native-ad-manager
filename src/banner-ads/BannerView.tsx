@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial'
@@ -9,6 +9,7 @@ import {
 } from './utils';
 import DefaultBanner from './DefaultBanner'
 import { IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
+import { gamADConfiguration } from '../adConfig';
 
 interface IProps {
   containerSize: string;
@@ -96,7 +97,7 @@ export function GamBannerView(props: IProps) {
         }
         setShowBanner(_ => !showBanner)
       },
-      showBanner ? 100000 : 1000
+      showBanner ? gamADConfiguration.getRefreshInterval() : 1000
     )
   }, [showBanner])
 
