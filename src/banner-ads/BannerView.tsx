@@ -56,6 +56,7 @@ export function GamBannerView(props: IProps) {
   }, [props.index, adUnitID])
 
   const onAdfailed = React.useCallback((error: any) => {
+    // console.log("GAM: af fa: ", error)
     setIsGamError(true)
     setIsAdLoaded(true)
     props.onAdFailed && props.onAdFailed({
@@ -97,7 +98,7 @@ export function GamBannerView(props: IProps) {
         }
         setShowBanner(_ => !showBanner)
       },
-      showBanner ? gamADConfiguration.getRefreshInterval() : 1000
+      showBanner ? gamADConfiguration.getRefreshInterval() : gamADConfiguration.getAdStaticInterval()
     )
   }, [showBanner])
 
@@ -149,6 +150,8 @@ export function GamBannerView(props: IProps) {
     ),
     []
   )
+
+  // console.log("GAM Nudge: ", props.index, props.adunitID, props.adSize, props)
 
   return (
     <View style={containerStyles}>

@@ -6,6 +6,7 @@ interface IAdConfig {
        loaderText?: string
     }
     refreshInterval?: number
+    adStaticInterval?: number
 }
 
 // Used to add initial config for ads
@@ -16,6 +17,7 @@ class AdConfiguration {
         loaderText: string
     }
     private refreshInterval: number
+    private adStaticInterval: number
     constructor() {
         // Default endpoint
         this.endPoint = 'https://www.fancode.com/graphql'
@@ -24,6 +26,7 @@ class AdConfiguration {
             loaderText: '#c8c8c8'
         }
         this.refreshInterval = 100000
+        this.adStaticInterval = 3000
     }
     // update the endpoint when application is launched
     updateValue(options: IAdConfig) {
@@ -38,6 +41,9 @@ class AdConfiguration {
         }
         if(options.refreshInterval) {
             this.refreshInterval = options.refreshInterval
+        }
+        if(options.adStaticInterval) {
+            this.adStaticInterval = options.adStaticInterval
         }
     }
     setEndpoint(endpoint: string) {
@@ -54,6 +60,9 @@ class AdConfiguration {
     }
     getRefreshInterval() {
         return this.refreshInterval
+    }
+    getAdStaticInterval() {
+        return this.adStaticInterval
     }
 }
 
