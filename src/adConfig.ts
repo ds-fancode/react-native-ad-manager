@@ -5,6 +5,8 @@ interface IAdConfig {
     themeColor?: {
        loaderText?: string
     }
+    refreshInterval?: number
+    adStaticInterval?: number
 }
 
 // Used to add initial config for ads
@@ -13,7 +15,9 @@ class AdConfiguration {
     private isGAMEnabled: boolean
     private themeColor: {
         loaderText: string
-     }
+    }
+    private refreshInterval: number
+    private adStaticInterval: number
     constructor() {
         // Default endpoint
         this.endPoint = 'https://www.fancode.com/graphql'
@@ -21,6 +25,8 @@ class AdConfiguration {
         this.themeColor = {
             loaderText: '#c8c8c8'
         }
+        this.refreshInterval = 100000
+        this.adStaticInterval = 3000
     }
     // update the endpoint when application is launched
     updateValue(options: IAdConfig) {
@@ -32,6 +38,12 @@ class AdConfiguration {
         }
         if(options.themeColor) {
             Object.assign(this.themeColor, options.themeColor)
+        }
+        if(options.refreshInterval) {
+            this.refreshInterval = options.refreshInterval
+        }
+        if(options.adStaticInterval) {
+            this.adStaticInterval = options.adStaticInterval
         }
     }
     setEndpoint(endpoint: string) {
@@ -45,6 +57,12 @@ class AdConfiguration {
     }
     getThemeColor() {
         return this.themeColor
+    }
+    getRefreshInterval() {
+        return this.refreshInterval
+    }
+    getAdStaticInterval() {
+        return this.adStaticInterval
     }
 }
 

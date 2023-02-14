@@ -27,7 +27,7 @@ enum ContentDataType {
   RTH = 'RTH'
 }
 
-enum GamType {
+export enum GamType {
   BANNER = 'BANNER',
   NATIVE = 'NATIVE'
 }
@@ -61,14 +61,15 @@ export interface SelectionOnEdges {
   artwork: SelectionOnArtwork;
   isExternal: boolean;
   bannerStartDate: string | null;
+  shouldApplyAdvertiserId: boolean | null;
   bannerEndDate: string | null;
   impressionLink: string | null;
-  adunitID: string
-  adWidth: number
-  aspectRatio: string
-  gamType: GamType | null;
+  adunitID: string | null
+  adWidth: number | null
+  aspectRatio: string | null
+  gamType: any;
   nativeAdUnitID: string | null;
-  type: BannerType;
+  type: any;
 }
 
 export enum BannerType {
@@ -84,7 +85,7 @@ export interface INudgeSegmentResponse {
   nudgeSegment: SelectionOnNudgeSegment;
 }
 
-export type IBannerProperties = Pick<SelectionOnEdges, 'title' | 'isAd' | 'id'>
+export type IBannerProperties = SelectionOnEdges
 
 export interface IGamProperties {
   adProperties: INudge

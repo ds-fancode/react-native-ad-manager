@@ -8,7 +8,8 @@ import {
   getWidthHeight,
 } from './utils';
 import DefaultBanner from './DefaultBanner'
-import {IBannerProperties, IGamProperties, INudge } from '../interfaces/AdTypes';
+import { IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
+import { gamADConfiguration } from '../adConfig';
 
 interface IProps {
   containerSize: string;
@@ -17,11 +18,12 @@ interface IProps {
   onAdClicked?: (e: IGamProperties) => void;
   onBannerAttempt?: (e: IGamProperties) => void
   gamContainerStyle?: any;
-  adunitID?: string
+  adunitID?: string | null
   adSize?: string
   defaultBannerdata?: {
     imagesrc?: string
     link?: string
+    onClickDefault?: (e: any, p: SelectionOnEdges) => void
   }
   showGamBanner: boolean
   adProperties: INudge
@@ -33,6 +35,7 @@ export function GamBannerView(props: IProps) {
 
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false)
+  const timeRef = React.useRef<{value: any}>({value: null})
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || ''
@@ -71,11 +74,30 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const onDefaultClick = React.useCallback(() => {
-    props.onAdClicked && props.onAdClicked({
-      ...gamProperties,
-      type: 'DEFAULT',
-    })
+    if (props.defaultBannerdata?.onClickDefault) {
+      props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
+    } else {
+      props.onAdClicked && props.onAdClicked({
+        ...gamProperties,
+        type: 'DEFAULT',
+      })
+    }
   }, [])
+
+  const [showBanner, setShowBanner] = React.useState(true)
+
+  React.useEffect(() => {
+    timeRef.current.value = setTimeout(
+      () => {
+        if(!showBanner) {
+          setIsGamError(false)
+          setIsAdLoaded(false)
+        }
+        setShowBanner(_ => !showBanner)
+      },
+      showBanner ? gamADConfiguration.getRefreshInterval() : gamADConfiguration.getAdStaticInterval()
+    )
+  }, [showBanner])
 
   const transformStyle = React.useMemo(
     () =>
@@ -89,7 +111,12 @@ export function GamBannerView(props: IProps) {
   );
 
   React.useEffect(() => {
-    props.onBannerAttempt && props.onBannerAttempt({...gamProperties})
+    props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties })
+    return () => {
+      if(timeRef.current.value) {
+        clearTimeout(timeRef.current.value)
+      }
+    }
   }, [])
 
   const containerStyles = React.useMemo(() => {
@@ -103,23 +130,32 @@ export function GamBannerView(props: IProps) {
     ]
   }, [])
 
+  const BannerComponent = React.useMemo(
+    () => (
+      <View style={transformStyle}>
+        <Banner
+          style={styles.bannerContainer}
+          onAdFailedToLoad={onAdfailed}
+          onAdOpened={onAdOpened}
+          adSize={`${adWidth}x${adHeight}` as any}
+          onAdLoaded={onAdLoad}
+          validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
+          adUnitID={adUnitID}
+          testDevices={[Interstitial.simulatorId]}
+        />
+      </View>
+    ),
+    []
+  )
+
   return (
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
+
       {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index}/> :
-        <View style={transformStyle}>
-          <Banner
-            style={styles.bannerContainer}
-            onAdFailedToLoad={onAdfailed}
-            onAdOpened={onAdOpened}
-            adSize={`${adWidth}x${adHeight}` as any}
-            onAdLoaded={onAdLoad}
-            validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
-            adUnitID={adUnitID}
-            testDevices={[Interstitial.simulatorId]}
-          />
-        </View>}
+        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index} /> :
+        showBanner ? BannerComponent : <PlaceHolderView />
+      }
     </View>
   )
 }

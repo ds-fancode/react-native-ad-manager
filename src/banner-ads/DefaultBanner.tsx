@@ -12,8 +12,8 @@ interface IProps {
 
 export default function DefaultBanner(props: IProps) {
     function onClick() {
+        props.onClick && props.onClick()
         if (props.link) {
-            props.onClick && props.onClick()
             Linking.openURL(props.link).then().catch()
         }
     }
