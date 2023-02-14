@@ -42,6 +42,9 @@ export function GAMNudge(props: IProps) {
       getNetworkResponse()
     }
   }, [props.isRefreshing])
+  
+  const NudgeData = adRequest.data?.data?.nudgeSegment?.edges && 
+      adRequest.data?.data?.nudgeSegment?.edges.length > 0 ? adRequest.data?.data.nudgeSegment.edges.slice(0, 1) : []
 
   if (!gamADConfiguration.isGAMAdEnabled()) {
     return null
@@ -73,7 +76,7 @@ export function GAMNudge(props: IProps) {
               bannerProperties={item.item}
             />
           }}
-          data={adRequest.data?.data.nudgeSegment.edges}
+          data={NudgeData}
           horizontal
           keyExtractor={(item) => {
             return item.id + item.adunitID
