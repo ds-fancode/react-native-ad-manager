@@ -88,11 +88,11 @@ export function GamBannerView(props: IProps) {
   const [showBanner, setShowBanner] = React.useState(true)
 
   React.useEffect(() => {
-    console.log('GAM INit:')
+    // console.log('GAM INit:')
     timeRef.current.value = setTimeout(
       () => {
-        console.log('GAM: showBanner:', showBanner)
-        if(showBanner) {
+        // console.log('GAM: showBanner:', showBanner)
+        if(!showBanner) {
           setIsGamError(false)
           setIsAdLoaded(false)
         }
