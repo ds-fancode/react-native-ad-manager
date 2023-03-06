@@ -383,17 +383,17 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     }
 
 
-    private Choreographer.FrameCallback fallback = new Choreographer.FrameCallback() {
+    private Choreographer.FrameCallback postFrameCallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long frameTimeNanos) {
             post(new MeasureAndLayoutRunnable());
             getViewTreeObserver().dispatchOnGlobalLayout();
-            Choreographer.getInstance().postFrameCallback(fallback);
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
         }
     };
 
 
     private void setupLayout() {
-        Choreographer.getInstance().postFrameCallback(fallback);
+        Choreographer.getInstance().postFrameCallback(postFrameCallback);
     }
 }
