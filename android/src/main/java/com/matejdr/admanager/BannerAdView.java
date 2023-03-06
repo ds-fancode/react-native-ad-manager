@@ -291,7 +291,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.createAdView();
         }
         this.adUnitID = adUnitID;
-        if(this.adManagerAdView != null) {
+        if (this.adManagerAdView != null) {
             this.adManagerAdView.setAdUnitId(adUnitID);
         }
     }
@@ -383,28 +383,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     }
 
 
-
-   private class MeasureAndLayoutRunnable implements Runnable {
-        @Override
-        public void run() {
-            if (isFluid()) {
-                adManagerAdView.measure(
-                    MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY)
-                );
-            } else {
-                adManagerAdView.measure(width, height);
-            }
-            adManagerAdView.layout(left, top, left + width, top + height);
-        }
-    }
-
     private Choreographer.FrameCallback fallback = new Choreographer.FrameCallback() {
         @Override
         public void doFrame(long frameTimeNanos) {
             post(new MeasureAndLayoutRunnable());
             getViewTreeObserver().dispatchOnGlobalLayout();
-            Choreographer.getInstance().postFrameCallback(this);
+            Choreographer.getInstance().postFrameCallback(fallback);
         }
     };
 
