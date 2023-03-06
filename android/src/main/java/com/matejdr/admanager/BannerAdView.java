@@ -291,7 +291,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.createAdView();
         }
         this.adUnitID = adUnitID;
-        if(this.adManagerAdView != null) {
+        if (this.adManagerAdView != null) {
             this.adManagerAdView.setAdUnitId(adUnitID);
         }
     }
@@ -383,26 +383,17 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     }
 
 
+    private Choreographer.FrameCallback postFrameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            post(new MeasureAndLayoutRunnable());
+            getViewTreeObserver().dispatchOnGlobalLayout();
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
+        }
+    };
+
 
     private void setupLayout() {
-        Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
-            @Override
-            public void doFrame(long frameTimeNanos) {
-                manuallyLayoutChildren();
-                getViewTreeObserver().dispatchOnGlobalLayout();
-                Choreographer.getInstance().postFrameCallback(this);
-            }
-        });
-    }
-
-    private void manuallyLayoutChildren() {
-        for (int i = 0; i < getChildCount(); i++) {
-            View child = getChildAt(i);
-            child.measure(
-                View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(getMeasuredHeight(), View.MeasureSpec.EXACTLY)
-            );
-            child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
-        }
+        Choreographer.getInstance().postFrameCallback(postFrameCallback);
     }
 }
