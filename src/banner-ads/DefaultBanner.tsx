@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { Linking, Image, TouchableOpacity } from 'react-native'
+import { gamADConfiguration } from '../adConfig'
 
 interface IProps {
     link?: string
@@ -13,7 +14,7 @@ interface IProps {
 export default function DefaultBanner(props: IProps) {
     function onClick() {
         props.onClick && props.onClick()
-        if (props.link) {
+        if (props.link && gamADConfiguration.getIsIntervalRedirectionEnabled()) {
             Linking.openURL(props.link).then().catch()
         }
     }

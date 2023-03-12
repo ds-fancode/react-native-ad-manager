@@ -15,6 +15,7 @@ interface IProps {
     onError?: (e: IGamProperties) => void
     onClick?: (e: IGamProperties) => void
     onBannerAttempt?: (e: IGamProperties) => void
+    onDefaultClick?: (e: {url: string}) => void
   }
   isRefreshing?: boolean
 }
@@ -66,11 +67,12 @@ export function GAMNudge(props: IProps) {
                 imagesrc: item.item.artwork.src,
                 link: item.item.navigationLink
               }}
-              showGamBanner={item.item.type === BannerType.GAM}
+              showGamBanner={false && item.item.type === BannerType.GAM}
               onAdClicked={props.adCallbacks?.onClick}
               onAdFailed={props.adCallbacks?.onError}
               onAdLoaded={props.adCallbacks?.onLoad}
               onBannerAttempt={props.adCallbacks?.onBannerAttempt}
+              onDefaultClick={props.adCallbacks?.onDefaultClick}
               adProperties={props.adProperties}
               index={item.index}
               bannerProperties={item.item}

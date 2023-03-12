@@ -17,6 +17,7 @@ interface IProps {
   onAdFailed?: (e: IGamProperties) => void;
   onAdClicked?: (e: IGamProperties) => void;
   onBannerAttempt?: (e: IGamProperties) => void
+  onDefaultClick?: (e: {url: string}) => void
   gamContainerStyle?: any;
   adunitID?: string | null
   adSize?: string
@@ -76,6 +77,8 @@ export function GamBannerView(props: IProps) {
   const onDefaultClick = React.useCallback(() => {
     if (props.defaultBannerdata?.onClickDefault) {
       props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
+    } else if(props.onDefaultClick && props.defaultBannerdata?.link) {
+      props.onDefaultClick({url: props.defaultBannerdata?.link})
     } else {
       props.onAdClicked && props.onAdClicked({
         ...gamProperties,
