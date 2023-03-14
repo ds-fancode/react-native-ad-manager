@@ -136,6 +136,8 @@ export function GamBannerView(props: IProps) {
     ]
   }, [])
 
+  // console.log("GAM: ad target: ", gamADConfiguration.getGamAdTargeting())
+
   const BannerComponent = React.useMemo(
     () => (
       <View style={transformStyle as any}>
@@ -148,6 +150,9 @@ export function GamBannerView(props: IProps) {
           validAdSizes={['fluid', `${adWidth}x${adHeight}`]}
           adUnitID={adUnitID}
           testDevices={[Interstitial.simulatorId]}
+          targeting={{
+            customTargeting: gamADConfiguration.getGamAdTargeting()
+          }}
         />
       </View>
     ),
