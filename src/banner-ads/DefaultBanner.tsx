@@ -8,13 +8,14 @@ interface IProps {
     style?: any
     onClick?: () => void;
     index:  number
+    isExternal?: boolean
 }
 
 
 export default function DefaultBanner(props: IProps) {
     function onClick() {
         props.onClick && props.onClick()
-        if (props.link && gamADConfiguration.getIsIntervalRedirectionEnabled()) {
+        if (props.link && (props.isExternal || gamADConfiguration.getIsIntervalRedirectionEnabled())) {
             Linking.openURL(props.link).then().catch()
         }
     }

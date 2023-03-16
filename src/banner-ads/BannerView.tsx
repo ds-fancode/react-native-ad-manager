@@ -25,6 +25,7 @@ interface IProps {
     imagesrc?: string
     link?: string
     onClickDefault?: (e: any, p: SelectionOnEdges) => void
+    isExternal?: boolean
   }
   showGamBanner: boolean
   adProperties: INudge
@@ -75,10 +76,12 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const onDefaultClick = React.useCallback(() => {
-    if (props.defaultBannerdata?.onClickDefault) {
-      props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
-    } else if(props.onDefaultClick && props.defaultBannerdata?.link) {
+    if(props.onDefaultClick && props.defaultBannerdata?.link && !props.defaultBannerdata.isExternal) {
       props.onDefaultClick({url: props.defaultBannerdata?.link})
+      props.onAdClicked && props.onAdClicked({
+        ...gamProperties,
+        type: 'DEFAULT',
+      })
     } else {
       props.onAdClicked && props.onAdClicked({
         ...gamProperties,

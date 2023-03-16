@@ -65,7 +65,8 @@ export function GAMNudge(props: IProps) {
               gamContainerStyle={props.gamContainerStyle}
               defaultBannerdata={{
                 imagesrc: item.item.artwork.src,
-                link: item.item.navigationLink
+                link: item.item.navigationLink,
+                isExternal: item.item.isExternal
               }}
               showGamBanner={false && item.item.type === BannerType.GAM}
               onAdClicked={props.adCallbacks?.onClick}
