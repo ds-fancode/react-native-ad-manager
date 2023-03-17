@@ -7,6 +7,7 @@ interface IAdConfig {
     }
     refreshInterval?: number
     adStaticInterval?: number
+    isExternalRedirectionEnabled?: boolean
 }
 
 // Used to add initial config for ads
@@ -18,6 +19,7 @@ class AdConfiguration {
     }
     private refreshInterval: number
     private adStaticInterval: number
+    private isExternalRedirectionEnabled: boolean
     constructor() {
         // Default endpoint
         this.endPoint = 'https://www.fancode.com/graphql'
@@ -27,6 +29,7 @@ class AdConfiguration {
         }
         this.refreshInterval = 100000
         this.adStaticInterval = 3000
+        this.isExternalRedirectionEnabled = false
     }
     // update the endpoint when application is launched
     updateValue(options: IAdConfig) {
@@ -44,6 +47,9 @@ class AdConfiguration {
         }
         if(options.adStaticInterval) {
             this.adStaticInterval = options.adStaticInterval
+        }
+        if(options.isExternalRedirectionEnabled) {
+            this.isExternalRedirectionEnabled = options.isExternalRedirectionEnabled
         }
     }
     setEndpoint(endpoint: string) {
@@ -63,6 +69,9 @@ class AdConfiguration {
     }
     getAdStaticInterval() {
         return this.adStaticInterval
+    }
+    getIsExternalRedirectionEnabled() {
+        return this.isExternalRedirectionEnabled
     }
 }
 
