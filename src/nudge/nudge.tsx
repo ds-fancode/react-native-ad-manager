@@ -68,7 +68,7 @@ export function GAMNudge(props: IProps) {
                 link: item.item.navigationLink,
                 isExternal: item.item.isExternal
               }}
-              showGamBanner={false && item.item.type === BannerType.GAM}
+              showGamBanner={item.item.type === BannerType.GAM}
               onAdClicked={props.adCallbacks?.onClick}
               onAdFailed={props.adCallbacks?.onError}
               onAdLoaded={props.adCallbacks?.onLoad}
