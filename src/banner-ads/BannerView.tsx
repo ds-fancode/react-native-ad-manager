@@ -138,7 +138,7 @@ export function GamBannerView(props: IProps) {
 
   const BannerComponent = React.useMemo(
     () => (
-      <View style={transformStyle}>
+      <View style={transformStyle as any}>
         <Banner
           style={styles.bannerContainer}
           onAdFailedToLoad={onAdfailed}
