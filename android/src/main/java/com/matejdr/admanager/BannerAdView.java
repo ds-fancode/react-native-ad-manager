@@ -55,7 +55,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         super(context);
 
         try {
-            currentActivityContext = applicationContext.getCurrentActivity();
+            // currentActivityContext = applicationContext.getCurrentActivity();
             applicationContext.addLifecycleEventListener(this);
             this.createAdView();
         } catch (Exception exception) { this.onException(exception); }
@@ -87,7 +87,9 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 this.adView.destroy();
             }
 
-            this.adView = new AdManagerAdView(currentActivityContext);
+            final Context context = getContext();
+
+            this.adView = new AdManagerAdView(context);
 
             this.adView.setAppEventListener(this);
             this.adView.setAdListener(new AdListener() {
@@ -107,8 +109,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
                         if (parent != null) {
                             int parentWidth = parent.getWidth();
-
-                            left = (parentWidth - width) / 2;
+                            // left = (parentWidth - width) / 2;
                         }
 
                         adView.measure(width, height);
@@ -409,7 +410,9 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 this.createAdView();
             }
             this.adUnitID = adUnitID;
-            this.adView.setAdUnitId(adUnitID);
+            if(this.adView != null) {
+                this.adView.setAdUnitId(adUnitID);
+            }
         } catch (Exception exception) { }
     }
 

@@ -180,8 +180,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
     top: 0,
     left: 0,
-    width: 200,
-    height: 100,
   },
   placeholderAd: {
     backgroundColor: '#FBAB33',
