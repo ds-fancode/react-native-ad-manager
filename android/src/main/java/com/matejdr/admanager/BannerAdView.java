@@ -107,11 +107,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
                         View parent = (View) adView.getParent();
 
-                        if (parent != null) {
-                            int parentWidth = parent.getWidth();
-                            // left = (parentWidth - width) / 2;
-                        }
-
                         adView.measure(width, height);
                         adView.layout(left, top, left + width, top + height);
 
