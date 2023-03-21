@@ -23,6 +23,9 @@ export function getTransformationStyle(
 
   return {
     transform: transformStyle,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     width: adWidth,
     height: adHeight,
   };

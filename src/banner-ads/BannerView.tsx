@@ -138,7 +138,7 @@ export function GamBannerView(props: IProps) {
 
   const BannerComponent = React.useMemo(
     () => (
-      <View style={transformStyle}>
+      <View style={transformStyle as any}>
         <Banner
           style={styles.bannerContainer}
           onAdFailedToLoad={onAdfailed}
@@ -180,8 +180,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
     top: 0,
     left: 0,
-    width: 200,
-    height: 100,
   },
   placeholderAd: {
     backgroundColor: '#FBAB33',
