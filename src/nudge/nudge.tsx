@@ -1,15 +1,18 @@
 import * as React from 'react'
 import { FlatList, View, ViewStyle } from 'react-native';
+import LottieView from 'lottie-react-native';
 import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
 import { IGamProperties, BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
+import { THEMES } from '../Constants';
 
 interface IProps {
   containerSize: string;
   adProperties: INudge
   gamContainerStyle?: ViewStyle
+  containerStyle?: ViewStyle
   adCallbacks?: {
     onLoad?: (e: IGamProperties) => void
     onError?: (e: IGamProperties) => void
@@ -48,6 +51,23 @@ export function GAMNudge(props: IProps) {
 
   if (!gamADConfiguration.isGAMAdEnabled()) {
     return null
+  }
+
+  if (!isGAMError && NudgeData[0]?.type && NudgeData[0]?.type === BannerType.ANIMATED) {
+    const {animationLinkDark, animationLinkLight} = NudgeData[0]
+    const themeMode = gamADConfiguration.getThemeMode()
+    const animationLink =
+      themeMode === THEMES.DARK ? animationLinkDark : animationLinkLight;
+    return (
+      <View style={props.containerStyle}>
+        <LottieView
+          source={{uri: animationLink}}
+          style={props.gamContainerStyle}
+          autoPlay={true}
+          loop={true}
+        />
+      </View>
+    )
   }
 
   return isGAMError ? null :

@@ -74,7 +74,8 @@ export interface SelectionOnEdges {
 
 export enum BannerType {
   DEFAULT = 'DEFAULT',
-  GAM = 'GAM'
+  GAM = 'GAM',
+  ANIMATED = 'ANIMATED',
 }
 
 export interface SelectionOnNudgeSegment {
