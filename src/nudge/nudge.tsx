@@ -9,7 +9,7 @@ import { gamADConfiguration } from '../adConfig';
 import { THEMES } from '../Constants';
 
 interface IProps {
-  containerSize: string;
+  containerSize?: string;
   adProperties: INudge
   gamContainerStyle?: ViewStyle
   containerStyle?: ViewStyle
