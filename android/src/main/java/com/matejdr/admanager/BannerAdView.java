@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -26,7 +27,7 @@ import com.google.android.gms.ads.admanager.AdManagerAdView;
 import com.google.android.gms.ads.admanager.AppEventListener;
 import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
-// import android.view.Choreographer;
+import android.view.Choreographer;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -124,7 +125,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         ad.putMap("gadSize", gadSize);
 
                         sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
-                        updateLayout();
+                        setupLayout();
                     } catch (Exception exception) { }
                 }
 
@@ -514,25 +515,21 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         } catch (Exception exception) { };
     }
 
-    // private void setupLayout() {
-    //     Choreographer.getInstance().postFrameCallback(new Choreographer.FrameCallback() {
-    //         @Override
-    //         public void doFrame(long frameTimeNanos) {
-    //             updateLayout();
-    //             getViewTreeObserver().dispatchOnGlobalLayout();
-    //             Choreographer.getInstance().postFrameCallback(this);
-    //         }
-    //     });
-    // }
+    private Choreographer.FrameCallback postFrameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            post(new MeasureAndLayoutRunnable());
+            getViewTreeObserver().dispatchOnGlobalLayout();
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
+        }
+    };
 
-    // private void manuallyLayoutChildren() {
-    //     for (int i = 0; i < getChildCount(); i++) {
-    //         View child = getChildAt(i);
-    //         child.measure(
-    //             View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), View.MeasureSpec.EXACTLY),
-    //             View.MeasureSpec.makeMeasureSpec(getMeasuredHeight(), View.MeasureSpec.EXACTLY)
-    //         );
-    //         child.layout(0, 0, child.getMeasuredWidth(), child.getMeasuredHeight());
-    //     }
-    // }
+    private void setupLayout() {
+        try {
+            if (!isFluid()) {
+                return;
+            }
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
+        } catch (Exception exception) { };
+    }
 }
