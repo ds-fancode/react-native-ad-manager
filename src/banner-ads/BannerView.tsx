@@ -17,6 +17,7 @@ interface IProps {
   onAdFailed?: (e: IGamProperties) => void;
   onAdClicked?: (e: IGamProperties) => void;
   onBannerAttempt?: (e: IGamProperties) => void
+  onDefaultClick?: (e: {url: string}) => void
   gamContainerStyle?: any;
   adunitID?: string | null
   adSize?: string
@@ -24,6 +25,7 @@ interface IProps {
     imagesrc?: string
     link?: string
     onClickDefault?: (e: any, p: SelectionOnEdges) => void
+    isExternal?: boolean
   }
   showGamBanner: boolean
   adProperties: INudge
@@ -74,8 +76,12 @@ export function GamBannerView(props: IProps) {
   }, [])
 
   const onDefaultClick = React.useCallback(() => {
-    if (props.defaultBannerdata?.onClickDefault) {
-      props.defaultBannerdata?.onClickDefault(null, props.bannerProperties)
+    if(props.onDefaultClick && props.defaultBannerdata?.link && !props.defaultBannerdata.isExternal) {
+      props.onDefaultClick({url: props.defaultBannerdata?.link})
+      props.onAdClicked && props.onAdClicked({
+        ...gamProperties,
+        type: 'DEFAULT',
+      })
     } else {
       props.onAdClicked && props.onAdClicked({
         ...gamProperties,
@@ -132,7 +138,7 @@ export function GamBannerView(props: IProps) {
 
   const BannerComponent = React.useMemo(
     () => (
-      <View style={transformStyle}>
+      <View style={transformStyle as any}>
         <Banner
           style={styles.bannerContainer}
           onAdFailedToLoad={onAdfailed}
@@ -174,8 +180,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
     top: 0,
     left: 0,
-    width: 200,
-    height: 100,
   },
   placeholderAd: {
     backgroundColor: '#FBAB33',

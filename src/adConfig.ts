@@ -8,6 +8,7 @@ interface IAdConfig {
     refreshInterval?: number
     adStaticInterval?: number
     themeMode?: string
+    isExternalRedirectionEnabled?: boolean
 }
 
 // Used to add initial config for ads
@@ -20,6 +21,7 @@ class AdConfiguration {
     private refreshInterval: number
     private adStaticInterval: number
     private themeMode: string
+    private isExternalRedirectionEnabled: boolean
     constructor() {
         // Default endpoint
         this.endPoint = 'https://k8s-trx-01.fancodedev.com/graphql'
@@ -30,6 +32,7 @@ class AdConfiguration {
         this.refreshInterval = 100000
         this.adStaticInterval = 3000
         this.themeMode = 'LIGHT'
+        this.isExternalRedirectionEnabled = false
     }
     // update the endpoint when application is launched
     updateValue(options: IAdConfig) {
@@ -50,6 +53,9 @@ class AdConfiguration {
         }
         if(options.themeMode) {
             this.themeMode = options.themeMode
+        }
+        if(options.isExternalRedirectionEnabled) {
+            this.isExternalRedirectionEnabled = options.isExternalRedirectionEnabled
         }
     }
     setEndpoint(endpoint: string) {
@@ -72,6 +78,10 @@ class AdConfiguration {
     }
     getThemeMode() {
         return this.themeMode
+    }
+
+    getIsExternalRedirectionEnabled() {
+        return this.isExternalRedirectionEnabled
     }
 }
 
