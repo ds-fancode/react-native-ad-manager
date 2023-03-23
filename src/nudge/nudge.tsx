@@ -49,19 +49,27 @@ export function GAMNudge(props: IProps) {
   const NudgeData = adRequest.data?.data?.nudgeSegment?.edges && 
       adRequest.data?.data?.nudgeSegment?.edges.length > 0 ? adRequest.data?.data.nudgeSegment.edges.slice(0, 1) : []
 
+  const themeMode = gamADConfiguration.getThemeMode()
+
+  const animationUri = React.useMemo(() => {
+    if (!isGAMError && NudgeData[0]?.type && NudgeData[0]?.type === BannerType.ANIMATED) {
+      const {animationLinkDark, animationLinkLight} = NudgeData[0]
+      if (animationLinkDark && animationLinkLight) {
+        return {uri: themeMode === THEMES.DARK ? animationLinkDark : animationLinkLight}
+      }
+    }
+    return null;
+  }, [isGAMError, NudgeData, themeMode])
+
   if (!gamADConfiguration.isGAMAdEnabled()) {
     return null
   }
 
-  if (!isGAMError && NudgeData[0]?.type && NudgeData[0]?.type === BannerType.ANIMATED) {
-    const {animationLinkDark, animationLinkLight} = NudgeData[0]
-    const themeMode = gamADConfiguration.getThemeMode()
-    const animationLink =
-      themeMode === THEMES.DARK ? animationLinkDark : animationLinkLight;
+  if (animationUri) {
     return (
       <View style={props.containerStyle}>
         <LottieView
-          source={{uri: animationLink}}
+          source={animationUri}
           style={props.gamContainerStyle}
           autoPlay={true}
           loop={false}
