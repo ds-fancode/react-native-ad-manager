@@ -1,3 +1,4 @@
+import { THEMES } from './Constants';
 
 interface IAdConfig {
     endPoint?: string
@@ -31,7 +32,7 @@ class AdConfiguration {
         }
         this.refreshInterval = 100000
         this.adStaticInterval = 3000
-        this.themeMode = 'LIGHT'
+        this.themeMode = THEMES.LIGHT
         this.isExternalRedirectionEnabled = false
     }
     // update the endpoint when application is launched

@@ -10,7 +10,7 @@ import { THEMES } from '../Constants';
 
 
 interface IProps {
-  containerSize?: string;
+  containerSize: string;
   adProperties: INudge
   gamContainerStyle?: ViewStyle
   containerStyle?: ViewStyle
@@ -24,7 +24,7 @@ interface IProps {
   isRefreshing?: boolean
 }
 
-export function GAMNudge(props: IProps) {
+function GAMNudgeView(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
@@ -117,3 +117,5 @@ export function GAMNudge(props: IProps) {
       </View>
     )
 }
+
+export const GAMNudge = React.memo(GAMNudgeView)
