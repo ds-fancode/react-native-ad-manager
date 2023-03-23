@@ -23,7 +23,6 @@ interface IProps {
   isRefreshing?: boolean
 }
 
-
 export function GAMNudge(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
