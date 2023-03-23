@@ -22,7 +22,7 @@ class AdConfiguration {
     private themeMode: string
     constructor() {
         // Default endpoint
-        this.endPoint = 'https://k8s-eng-01.fancodedev.com/graphql'
+        this.endPoint = 'https://k8s-trx-01.fancodedev.com/graphql'
         this.isGAMEnabled = true
         this.themeColor = {
             loaderText: '#c8c8c8'
