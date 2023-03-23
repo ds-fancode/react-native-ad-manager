@@ -70,8 +70,8 @@ export interface SelectionOnEdges {
   gamType: any;
   nativeAdUnitID: string | null;
   type: any;
-  animationLinkDark: string | null;
-  animationLinkLight: string | null;
+  animationLinkDark?: string | null;
+  animationLinkLight?: string | null;
 }
 
 export enum BannerType {
