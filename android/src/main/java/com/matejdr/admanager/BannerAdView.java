@@ -27,6 +27,8 @@ import com.google.android.gms.ads.admanager.AdManagerAdView;
 import com.google.android.gms.ads.admanager.AppEventListener;
 import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
+import android.view.Choreographer;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -123,6 +125,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         ad.putMap("gadSize", gadSize);
 
                         sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
+                        setupLayout();
                     } catch (Exception exception) { }
                 }
 
@@ -509,6 +512,24 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 this.currentActivityContext = null;
                 this.adView.destroy();
             }
+        } catch (Exception exception) { };
+    }
+
+    private Choreographer.FrameCallback postFrameCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            post(new MeasureAndLayoutRunnable());
+            getViewTreeObserver().dispatchOnGlobalLayout();
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
+        }
+    };
+
+    private void setupLayout() {
+        try {
+            if (!isFluid()) {
+                return;
+            }
+            Choreographer.getInstance().postFrameCallback(postFrameCallback);
         } catch (Exception exception) { };
     }
 }
