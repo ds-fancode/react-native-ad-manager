@@ -24,7 +24,7 @@ class AdConfiguration {
     private isExternalRedirectionEnabled: boolean
     constructor() {
         // Default endpoint
-        this.endPoint = 'https://k8s-trx-01.fancodedev.com/graphql'
+        this.endPoint = 'https://www.fancode.com/graphql'
         this.isGAMEnabled = true
         this.themeColor = {
             loaderText: '#c8c8c8'
