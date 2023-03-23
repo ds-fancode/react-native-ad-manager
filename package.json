@@ -1,7 +1,7 @@
 {
   "name": "react-native-ad-manager",
   "title": "React Native Ad Manager",
-  "version": "2.0.11",
+  "version": "2.0.13",
   "description": "A react-native component for Google Ad Manager banners, interstitials and native ads.",
   "main": "src/index.ts",
   "module": "src/index.ts",
@@ -66,7 +66,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "lottie-react-native": "*"
   },
   "jest": {
     "preset": "react-native",

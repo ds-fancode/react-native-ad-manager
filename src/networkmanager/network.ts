@@ -14,7 +14,7 @@ export const fetchQuery = (nudgeVariables: INudge) => {
         "input": nudgeVariables
       },
       "query":
-        `query NudgeSegment($input: SegmentFilter!) { nudgeSegment(input: $input) { edges { id title isAd navigationLink artwork { src } isExternal bannerStartDate bannerEndDate impressionLink type adunitID adWidth aspectRatio type } }}`,
+        `query NudgeSegment($input: SegmentFilter!) { nudgeSegment(input: $input) { edges { id title isAd navigationLink artwork { src } isExternal bannerStartDate bannerEndDate impressionLink type adunitID adWidth aspectRatio type animationLinkDark animationLinkLight } }}`,
     }),
   })
     .then(res => res.json())

@@ -1,3 +1,4 @@
+import { THEMES } from './Constants';
 
 interface IAdConfig {
     endPoint?: string
@@ -7,6 +8,7 @@ interface IAdConfig {
     }
     refreshInterval?: number
     adStaticInterval?: number
+    themeMode?: string
     isExternalRedirectionEnabled?: boolean
 }
 
@@ -19,6 +21,7 @@ class AdConfiguration {
     }
     private refreshInterval: number
     private adStaticInterval: number
+    private themeMode: string
     private isExternalRedirectionEnabled: boolean
     constructor() {
         // Default endpoint
@@ -29,6 +32,7 @@ class AdConfiguration {
         }
         this.refreshInterval = 100000
         this.adStaticInterval = 3000
+        this.themeMode = THEMES.LIGHT
         this.isExternalRedirectionEnabled = false
     }
     // update the endpoint when application is launched
@@ -47,6 +51,9 @@ class AdConfiguration {
         }
         if(options.adStaticInterval) {
             this.adStaticInterval = options.adStaticInterval
+        }
+        if(options.themeMode) {
+            this.themeMode = options.themeMode
         }
         if(options.isExternalRedirectionEnabled) {
             this.isExternalRedirectionEnabled = options.isExternalRedirectionEnabled
@@ -70,6 +77,10 @@ class AdConfiguration {
     getAdStaticInterval() {
         return this.adStaticInterval
     }
+    getThemeMode() {
+        return this.themeMode
+    }
+
     getIsExternalRedirectionEnabled() {
         return this.isExternalRedirectionEnabled
     }

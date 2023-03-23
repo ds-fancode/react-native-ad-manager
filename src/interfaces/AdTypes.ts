@@ -70,11 +70,14 @@ export interface SelectionOnEdges {
   gamType: any;
   nativeAdUnitID: string | null;
   type: any;
+  animationLinkDark?: string | null;
+  animationLinkLight?: string | null;
 }
 
 export enum BannerType {
   DEFAULT = 'DEFAULT',
-  GAM = 'GAM'
+  GAM = 'GAM',
+  ANIMATED = 'ANIMATED',
 }
 
 export interface SelectionOnNudgeSegment {

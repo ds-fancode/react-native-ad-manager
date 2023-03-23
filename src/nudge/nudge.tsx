@@ -1,15 +1,19 @@
 import * as React from 'react'
 import { FlatList, View, ViewStyle } from 'react-native';
+import LottieView from 'lottie-react-native';
 import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
 import { IGamProperties, BannerType, INudge, INudgeResponse } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
+import { THEMES } from '../Constants';
+
 
 interface IProps {
   containerSize: string;
   adProperties: INudge
   gamContainerStyle?: ViewStyle
+  containerStyle?: ViewStyle
   adCallbacks?: {
     onLoad?: (e: IGamProperties) => void
     onError?: (e: IGamProperties) => void
@@ -20,8 +24,7 @@ interface IProps {
   isRefreshing?: boolean
 }
 
-
-export function GAMNudge(props: IProps) {
+function GAMNudgeView(props: IProps) {
   const [adRequest, setAdRequest] = React.useState<{ data?: INudgeResponse, isError: boolean }>({ isError: true })
   const [isGAMError, setIsGamError] = React.useState(false)
 
@@ -47,8 +50,33 @@ export function GAMNudge(props: IProps) {
   const NudgeData = adRequest.data?.data?.nudgeSegment?.edges && 
       adRequest.data?.data?.nudgeSegment?.edges.length > 0 ? adRequest.data?.data.nudgeSegment.edges.slice(0, 1) : []
 
+  const themeMode = gamADConfiguration.getThemeMode()
+
+  const animationUri = React.useMemo(() => {
+    if (!isGAMError && NudgeData[0]?.type && NudgeData[0]?.type === BannerType.ANIMATED) {
+      const {animationLinkDark, animationLinkLight} = NudgeData[0]
+      if (animationLinkDark && animationLinkLight) {
+        return {uri: themeMode === THEMES.DARK ? animationLinkDark : animationLinkLight}
+      }
+    }
+    return null;
+  }, [isGAMError, NudgeData, themeMode])
+
   if (!gamADConfiguration.isGAMAdEnabled()) {
     return null
+  }
+
+  if (animationUri) {
+    return (
+      <View style={props.containerStyle}>
+        <LottieView
+          source={animationUri}
+          style={props.gamContainerStyle}
+          autoPlay={true}
+          loop={false}
+        />
+      </View>
+    )
   }
 
   return isGAMError ? null :
@@ -89,3 +117,5 @@ export function GAMNudge(props: IProps) {
       </View>
     )
 }
+
+export const GAMNudge = React.memo(GAMNudgeView)
