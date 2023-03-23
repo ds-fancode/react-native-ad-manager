@@ -8,6 +8,7 @@ import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
 import { THEMES } from '../Constants';
 
+
 interface IProps {
   containerSize?: string;
   adProperties: INudge
