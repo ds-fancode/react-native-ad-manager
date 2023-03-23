@@ -64,7 +64,7 @@ export function GAMNudge(props: IProps) {
           source={{uri: animationLink}}
           style={props.gamContainerStyle}
           autoPlay={true}
-          loop={true}
+          loop={false}
         />
       </View>
     )
