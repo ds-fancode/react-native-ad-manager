@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     zIndex: 10,
     color: '#121212',
-    fontFamily: 'Noto Sans Display',
+    fontFamily: 'Roboto',
     fontSize: 11,
     fontWeight: '500',
     lineHeight: 16,
