@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         borderRadius: 12
     },
     loading: {
-        fontFamily: 'Noto Sans Display',
+        fontFamily: 'Roboto',
         fontSize: 11,
         fontWeight: '500',
         lineHeight: 16,
