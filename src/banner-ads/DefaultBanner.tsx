@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { Linking, Image, TouchableOpacity } from 'react-native'
+import { Linking, TouchableOpacity } from 'react-native'
 import { gamADConfiguration } from '../adConfig'
+import * as FastImage from 'react-native-fast-image'
 
 interface IProps {
     link?: string
@@ -28,11 +29,13 @@ export default function DefaultBanner(props: IProps) {
         onPress={onClick} 
         testID={'nudges_container' + props.index}
         accessibilityLabel={'nudges_container' + props.index}>
-            <Image
+            {/* @ts-ignore */}
+            <FastImage
                 source={{
                     uri: props.imagesrc
                 }}
                 style={imageStyle}
-            ></Image></TouchableOpacity>
+            />
+            </TouchableOpacity>
     )
 }
