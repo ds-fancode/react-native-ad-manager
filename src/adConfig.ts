@@ -10,7 +10,8 @@ interface IAdConfig {
   adStaticInterval?: number;
   themeMode?: string;
   isExternalRedirectionEnabled?: boolean;
-  gamAdTargeting?: string;
+  gamAdTargetingURI?: string;
+  staticAdTargetting?: Record<string, any>;
 }
 
 const parseURI = (uri: string) => {
@@ -40,7 +41,8 @@ class AdConfiguration {
   private adStaticInterval: number;
   private themeMode: string;
   private isExternalRedirectionEnabled: boolean;
-  private gamAdTargeting: string;
+  private gamAdTargetingURI: string;
+  private staticAdTargetting?: Record<string, string>;
   constructor() {
     // Default endpoint
     this.endPoint = 'https://www.fancode.com/graphql';
@@ -52,7 +54,8 @@ class AdConfiguration {
     this.adStaticInterval = 3000;
     this.themeMode = THEMES.LIGHT;
     this.isExternalRedirectionEnabled = false;
-    this.gamAdTargeting = '';
+    this.gamAdTargetingURI = '';
+    this.staticAdTargetting = {};
   }
   // update the endpoint when application is launched
   updateValue(options: IAdConfig) {
@@ -77,8 +80,14 @@ class AdConfiguration {
     if (options.isExternalRedirectionEnabled) {
       this.isExternalRedirectionEnabled = options.isExternalRedirectionEnabled;
     }
-    if (options.gamAdTargeting) {
-      this.gamAdTargeting = options.gamAdTargeting;
+    if (options.gamAdTargetingURI) {
+      this.gamAdTargetingURI = options.gamAdTargetingURI;
+    }
+    if (options.staticAdTargetting) {
+      this.staticAdTargetting = {
+        ...this.staticAdTargetting,
+        ...options.staticAdTargetting,
+      };
     }
   }
   setEndpoint(endpoint: string) {
@@ -107,8 +116,16 @@ class AdConfiguration {
     return this.isExternalRedirectionEnabled;
   }
   getGamAdTargeting() {
-    // console.log("GAM: parseURI: ", parseURI(this.gamAdTargeting))
-    return parseURI(this.gamAdTargeting);
+    return parseURI(this.gamAdTargetingURI);
+  }
+  getStaticAdTargetting() {
+    return this.staticAdTargetting;
+  }
+  getAdTargetting() {
+    return {
+      ...this.getStaticAdTargetting(),
+      ...this.getGamAdTargeting(),
+    };
   }
 }
 

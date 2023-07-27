@@ -2,13 +2,15 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
-import Interstitial from '../CTKAdManagerInterstitial'
+import Interstitial from '../CTKAdManagerInterstitial';
+import { getTransformationStyle, getWidthHeight } from './utils';
+import DefaultBanner from './DefaultBanner';
 import {
-  getTransformationStyle,
-  getWidthHeight,
-} from './utils';
-import DefaultBanner from './DefaultBanner'
-import { IBannerProperties, IGamProperties, INudge, SelectionOnEdges } from '../interfaces/AdTypes';
+  IBannerProperties,
+  IGamProperties,
+  INudge,
+  SelectionOnEdges,
+} from '../interfaces/AdTypes';
 import { gamADConfiguration } from '../adConfig';
 
 interface IProps {
@@ -16,34 +18,33 @@ interface IProps {
   onAdLoaded?: (e: IGamProperties) => void;
   onAdFailed?: (e: IGamProperties) => void;
   onAdClicked?: (e: IGamProperties) => void;
-  onBannerAttempt?: (e: IGamProperties) => void
-  onDefaultClick?: (e: {url: string}) => void
+  onBannerAttempt?: (e: IGamProperties) => void;
+  onDefaultClick?: (e: { url: string }) => void;
   gamContainerStyle?: any;
-  adunitID?: string | null
-  adSize?: string
+  adunitID?: string | null;
+  adSize?: string;
   defaultBannerdata?: {
-    imagesrc?: string
-    link?: string
-    onClickDefault?: (e: any, p: SelectionOnEdges) => void
-    isExternal?: boolean
-  }
-  showGamBanner: boolean
-  adProperties: INudge
-  index: number
-  bannerProperties: IBannerProperties
+    imagesrc?: string;
+    link?: string;
+    onClickDefault?: (e: any, p: SelectionOnEdges) => void;
+    isExternal?: boolean;
+  };
+  showGamBanner: boolean;
+  adProperties: INudge;
+  index: number;
+  bannerProperties: IBannerProperties;
 }
 
 export function GamBannerView(props: IProps) {
-
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
-  const [adLoaded, setIsAdLoaded] = React.useState(false)
-  const timeRef = React.useRef<{value: any}>({value: null})
+  const [adLoaded, setIsAdLoaded] = React.useState(false);
+  const timeRef = React.useRef<{ value: any }>({ value: null });
 
   const adUnitID = props.adunitID || '';
-  const adSize = props.adSize || ''
+  const adSize = props.adSize || '';
 
   const [adWidth, adHeight] = getWidthHeight(adSize);
-  const [isGAMError, setIsGamError] = React.useState(false)
+  const [isGAMError, setIsGamError] = React.useState(false);
 
   const gamProperties = React.useMemo(() => {
     return {
@@ -53,57 +54,66 @@ export function GamBannerView(props: IProps) {
       bannerSize: adSize,
       type: props.showGamBanner ? 'GAM' : 'DEFAULT',
       adType: 'Banner',
-      bannerProperties: props.bannerProperties
-    }
-  }, [props.index, adUnitID])
+      bannerProperties: props.bannerProperties,
+    };
+  }, [props.index, adUnitID]);
 
   const onAdfailed = React.useCallback((error: any) => {
-    setIsGamError(true)
-    setIsAdLoaded(true)
-    props.onAdFailed && props.onAdFailed({
-      errormessage: error?.toString(),
-      ...gamProperties,
-    });
-  }, [])
+    setIsGamError(true);
+    setIsAdLoaded(true);
+    props.onAdFailed &&
+      props.onAdFailed({
+        errormessage: error?.toString(),
+        ...gamProperties,
+      });
+  }, []);
 
   const onAdOpened = React.useCallback(() => {
     props.onAdClicked && props.onAdClicked(gamProperties);
-  }, [])
+  }, []);
 
   const onAdLoad = React.useCallback(() => {
-    setIsAdLoaded(true)
+    setIsAdLoaded(true);
     props.onAdLoaded && props.onAdLoaded(gamProperties);
-  }, [])
+  }, []);
 
   const onDefaultClick = React.useCallback(() => {
-    if(props.onDefaultClick && props.defaultBannerdata?.link && !props.defaultBannerdata.isExternal) {
-      props.onDefaultClick({url: props.defaultBannerdata?.link})
-      props.onAdClicked && props.onAdClicked({
-        ...gamProperties,
-        type: 'DEFAULT',
-      })
+    if (
+      props.onDefaultClick &&
+      props.defaultBannerdata?.link &&
+      !props.defaultBannerdata.isExternal
+    ) {
+      props.onDefaultClick({ url: props.defaultBannerdata?.link });
+      props.onAdClicked &&
+        props.onAdClicked({
+          ...gamProperties,
+          type: 'DEFAULT',
+        });
     } else {
-      props.onAdClicked && props.onAdClicked({
-        ...gamProperties,
-        type: 'DEFAULT',
-      })
+      props.onAdClicked &&
+        props.onAdClicked({
+          ...gamProperties,
+          type: 'DEFAULT',
+        });
     }
-  }, [])
+  }, []);
 
-  const [showBanner, setShowBanner] = React.useState(true)
+  const [showBanner, setShowBanner] = React.useState(true);
 
   React.useEffect(() => {
     timeRef.current.value = setTimeout(
       () => {
-        if(!showBanner) {
-          setIsGamError(false)
-          setIsAdLoaded(false)
+        if (!showBanner) {
+          setIsGamError(false);
+          setIsAdLoaded(false);
         }
-        setShowBanner(_ => !showBanner)
+        setShowBanner((_) => !showBanner);
       },
-      showBanner ? gamADConfiguration.getRefreshInterval() : gamADConfiguration.getAdStaticInterval()
-    )
-  }, [showBanner])
+      showBanner
+        ? gamADConfiguration.getRefreshInterval()
+        : gamADConfiguration.getAdStaticInterval()
+    );
+  }, [showBanner]);
 
   const transformStyle = React.useMemo(
     () =>
@@ -111,32 +121,30 @@ export function GamBannerView(props: IProps) {
         containerWidth,
         containerHeight,
         adWidth,
-        adHeight,
+        adHeight
       ),
-    [containerWidth, containerHeight],
+    [containerWidth, containerHeight]
   );
 
   React.useEffect(() => {
-    props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties })
+    props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties });
     return () => {
-      if(timeRef.current.value) {
-        clearTimeout(timeRef.current.value)
+      if (timeRef.current.value) {
+        clearTimeout(timeRef.current.value);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const containerStyles = React.useMemo(() => {
     return [
       props.gamContainerStyle,
       {
         width: containerWidth,
-        height: containerHeight
+        height: containerHeight,
       },
       styles.container,
-    ]
-  }, [])
-
-  // console.log("GAM: ad target: ", gamADConfiguration.getGamAdTargeting())
+    ];
+  }, []);
 
   const BannerComponent = React.useMemo(
     () => (
@@ -151,24 +159,32 @@ export function GamBannerView(props: IProps) {
           adUnitID={adUnitID}
           testDevices={[Interstitial.simulatorId]}
           targeting={{
-            customTargeting: gamADConfiguration.getGamAdTargeting()
+            customTargeting: gamADConfiguration.getAdTargetting(),
           }}
         />
       </View>
     ),
     []
-  )
+  );
 
   return (
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
 
-      {isGAMError || !props.showGamBanner || !adUnitID ?
-        <DefaultBanner style={transformStyle} {...props.defaultBannerdata} onClick={onDefaultClick} index={props.index} /> :
-        showBanner ? BannerComponent : <PlaceHolderView />
-      }
+      {isGAMError || !props.showGamBanner || !adUnitID ? (
+        <DefaultBanner
+          style={transformStyle}
+          {...props.defaultBannerdata}
+          onClick={onDefaultClick}
+          index={props.index}
+        />
+      ) : showBanner ? (
+        BannerComponent
+      ) : (
+        <PlaceHolderView />
+      )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -200,6 +216,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '500',
     lineHeight: 16,
-    letterSpacing: 0.2
+    letterSpacing: 0.2,
   },
 });
