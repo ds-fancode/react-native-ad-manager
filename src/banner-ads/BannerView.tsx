@@ -164,7 +164,10 @@ export function GamBannerView(props: IProps) {
         />
       </View>
     ),
-    []
+    [
+      gamADConfiguration.getStaticAdTargetting(),
+      gamADConfiguration.getGamAdTargeting(),
+    ]
   );
 
   return (
