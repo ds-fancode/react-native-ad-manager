@@ -1,4 +1,14 @@
 import { THEMES } from './Constants';
+import type { INativeAdElement } from './native-ads/NativeAds'
+import type { FC } from 'react';
+
+
+
+interface NativeADComponentMap {
+  s300x250: FC<INativeAdElement>
+  s320x152: FC<INativeAdElement>
+  s320x50: FC<INativeAdElement>
+}
 
 interface IAdConfig {
   endPoint?: string;
@@ -12,6 +22,7 @@ interface IAdConfig {
   isExternalRedirectionEnabled?: boolean;
   gamAdTargetingURI?: string;
   staticAdTargetting?: Record<string, any>;
+  nativeAdComponentMap?: NativeADComponentMap;
 }
 
 const parseURI = (uri: string) => {
@@ -89,6 +100,9 @@ class AdConfiguration {
         ...options.staticAdTargetting,
       };
     }
+    if (options.nativeAdComponentMap) {
+      this.nativeAdComponentMap = options.nativeAdComponentMap
+    }
   }
   setEndpoint(endpoint: string) {
     this.endPoint = endpoint;
@@ -126,6 +140,21 @@ class AdConfiguration {
       ...this.getStaticAdTargetting(),
       ...this.getGamAdTargeting(),
     };
+  }
+  getNativeAdComponent(size?: string) {
+    switch (size) {
+      case '300x250':
+        return this.nativeAdComponentMap?.s300x250
+
+      case '320x152':
+        return this.nativeAdComponentMap?.s320x152
+
+      case '320x50':
+        return this.nativeAdComponentMap?.s320x50
+    
+      default:
+        return this.nativeAdComponentMap?.s300x250
+    }
   }
 }
 
