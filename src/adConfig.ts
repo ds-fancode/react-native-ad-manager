@@ -54,6 +54,7 @@ class AdConfiguration {
   private isExternalRedirectionEnabled: boolean;
   private gamAdTargetingURI: string;
   private staticAdTargetting?: Record<string, string>;
+  private nativeAdComponentMap?: NativeADComponentMap | null;
   constructor() {
     // Default endpoint
     this.endPoint = 'https://www.fancode.com/graphql';
@@ -67,6 +68,7 @@ class AdConfiguration {
     this.isExternalRedirectionEnabled = false;
     this.gamAdTargetingURI = '';
     this.staticAdTargetting = {};
+    this.nativeAdComponentMap =  null
   }
   // update the endpoint when application is launched
   updateValue(options: IAdConfig) {

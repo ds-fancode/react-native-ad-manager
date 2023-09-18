@@ -108,6 +108,7 @@ const NativeAdView =
   UIManager.getViewManagerConfig(ComponentName) != null
     ? requireNativeComponent<INativeAdNativeProps>(ComponentName)
     : () => {
+      console.log("..RUSHI linking error")
         // eslint-disable-next-line no-undef
         throw new Error(LINKING_ERROR);
       };
@@ -120,6 +121,7 @@ export default (Component: React.JSXElementConstructor<any>) =>
     clickableChildrenNodeHandles = new Map();
 
     constructor(props: INativeAdProps) {
+      console.log('...RUSHI, withnativead wrapper constructor', props)
       super(props);
       this.state = {
         // iOS requires a non-null value
@@ -129,6 +131,7 @@ export default (Component: React.JSXElementConstructor<any>) =>
     }
 
     componentDidMount() {
+      console.log('...RUSHI, withnativead wrapper componentDidMount')
       this.reloadAd();
     }
 
@@ -169,6 +172,7 @@ export default (Component: React.JSXElementConstructor<any>) =>
       | IAdManagerEventLoadedTemplate
       | IAdManagerEventLoadedNative
     >) => {
+      console.log("..RUSHI: withnativeAd handleAdLoaded", nativeEvent)
       this.setState({ nativeAd: nativeEvent });
       this.props.onAdLoaded && this.props.onAdLoaded(nativeEvent);
     };
@@ -221,6 +225,7 @@ export default (Component: React.JSXElementConstructor<any>) =>
     }
 
     renderAdComponent(componentProps: INativeAdProps) {
+      console.log("..RUSHI: withnativeAd renderAdComponent", this.state.nativeAd)
       if (!this.state.nativeAd) {
         return null;
       }
@@ -243,6 +248,8 @@ export default (Component: React.JSXElementConstructor<any>) =>
         { adsManager } = _a,
         rest = stripProperties(_a, ['adsManager', 'onAdLoaded']);
 
+        console.log('...RUSHI, withnativead wrapper render', JSON.stringify(adsManager))
+
       return (
         <NativeAdView
           style={[this.props.style, this.state.style]}
@@ -255,10 +262,13 @@ export default (Component: React.JSXElementConstructor<any>) =>
           onSizeChange={this.handleSizeChange}
           onAdLoaded={this.handleAdLoaded}
           onAdFailedToLoad={(event) =>
-            this.props.onAdFailedToLoad &&
+            {
+              console.log("..RUSHI: withnativeAd onAdFailedToLoad", event.nativeEvent.error)
+              this.props.onAdFailedToLoad &&
             this.props.onAdFailedToLoad(
               createErrorFromErrorData(event.nativeEvent.error)
             )
+            }
           }
           onAppEvent={(event) =>
             this.props.onAppEvent && this.props.onAppEvent(event.nativeEvent)

@@ -16,17 +16,18 @@ export interface INativeAdElement {
   image?: string;
   logo?: string;
   type?: string;
+  clickThroughUrl?: string
 }
 
 const NativeAdsView: React.FC = (props: IProps) => {
   const { nativeAd } = props;
   if (nativeAd?.type && !['native', 'template'].includes(nativeAd?.type)) {
-    console.log('...RUSHI: NativeAdsView returning null', nativeAd);
+    console.log("...RUSHI: NativeAdsView returning null", nativeAd)
     return null;
   }
 
-  const themeMode = gamADConfiguration.getThemeMode();
-  console.log('DEBUG: themeMode', themeMode);
+  const themeMode = gamADConfiguration.getThemeMode()
+  console.log("DEBUG: themeMode", themeMode)
 
   console.log('...RUSHI: NativeAds.tsx', nativeAd);
 
