@@ -1,13 +1,21 @@
 import { THEMES } from './Constants';
 import type { INativeAdElement } from './native-ads/NativeAds'
-import type { FC } from 'react';
 
 
 
 interface NativeADComponentMap {
-  s300x250: FC<INativeAdElement>
-  s320x152: FC<INativeAdElement>
-  s320x50: FC<INativeAdElement>
+  s300x250: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
+  s320x152: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
+  s320x50: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
 }
 
 interface IAdConfig {

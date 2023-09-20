@@ -31,11 +31,14 @@ const NativeAdsView: React.FC = (props: IProps) => {
 
   console.log('...RUSHI: NativeAds.tsx', nativeAd);
 
+  const NativeComponent = React.useMemo(() => gamADConfiguration.getNativeAdComponent(props.size), [props.size])
+  console.log("...RUSHI: NativeAdsView NativeComponent", NativeComponent, typeof(NativeComponent))
+
   return (
     <View style={styles.container}>
       <TriggerableView style={styles.triggerableView} />
-      {props.nativeAd
-        ? gamADConfiguration.getNativeAdComponent(props.size)?.(props.nativeAd)
+      {props.nativeAd && NativeComponent
+        ? <NativeComponent {...props.nativeAd}/>
         : null}
     </View>
   );
@@ -44,7 +47,6 @@ const NativeAdsView: React.FC = (props: IProps) => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    height: '100%',
   },
   triggerableView: {
     position: 'absolute',
