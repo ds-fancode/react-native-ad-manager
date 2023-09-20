@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { FlatList, View, ViewStyle } from 'react-native';
+import { FlatList, Text, View, ViewStyle } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { getAdSize } from '../banner-ads/utils';
 import { GamBannerView } from '../banner-ads/BannerView';
