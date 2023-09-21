@@ -46,7 +46,6 @@ const NativeAdsView: React.FC = (props: IProps) => {
         <Text>{props.nativeAd?.cta ?? 'No cta'}</Text>
         <Text>{props.nativeAd?.logo ?? 'No logo'}</Text>
         <Text>{props.nativeAd?.secondaryText ?? 'No secondaryText'}</Text>
-        <Text>{JSON.stringify(props.nativeAd)}</Text>
       </View>
     </View>
   );
