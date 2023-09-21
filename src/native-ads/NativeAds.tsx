@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import withNativeAd from './withNativeAd';
 import { TriggerableView } from './TriggerableViewManager';
 import { gamADConfiguration } from '../adConfig';
@@ -40,6 +40,14 @@ const NativeAdsView: React.FC = (props: IProps) => {
       {props.nativeAd && NativeComponent
         ? <NativeComponent {...props.nativeAd}/>
         : null}
+      <View style={{backgroundColor: 'yellow'}}>
+        <Text>Native ad is rendered</Text>
+        <Text>{props.nativeAd?.title ?? 'No Title'}</Text>
+        <Text>{props.nativeAd?.cta ?? 'No cta'}</Text>
+        <Text>{props.nativeAd?.logo ?? 'No logo'}</Text>
+        <Text>{props.nativeAd?.secondaryText ?? 'No secondaryText'}</Text>
+        <Text>{JSON.stringify(props.nativeAd)}</Text>
+      </View>
     </View>
   );
 };
