@@ -24,7 +24,6 @@ import type {
 } from '../AdManagerEvent';
 import { createErrorFromErrorData, stripProperties } from '../utils';
 import { LINKING_ERROR } from '../Constants';
-
 /*
 @property (nonatomic, copy) NSDictionary *targeting;
 
