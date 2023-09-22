@@ -1,5 +1,5 @@
 import { THEMES } from './Constants';
-import type { INativeAdElement } from './native-ads/NativeAds'
+import type { INativeAdElement } from './native-ads/native-ads'
 
 
 
