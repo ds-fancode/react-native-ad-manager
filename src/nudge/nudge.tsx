@@ -105,6 +105,8 @@ function GAMNudgeView(props: IProps) {
 
   console.log('..RUSHI: GamNudgeView', isGAMError);
   const [adUnitInput, setAdUnitInput] = React.useState('/22693816480/nudge//native');
+  const [validAdSizes, setValidAdSizes] = React.useState('300x250,320x100,300x50');
+  const [validAdTypes, setValidAdTypes] = React.useState('native,template');
   if (x) {
     console.log('..RUSHI: Test inside of condition');
     const adsManager = React.useMemo(() => new NativeAdsManager(adUnitInput, [
@@ -120,8 +122,26 @@ function GAMNudgeView(props: IProps) {
         <TextInput
         onChangeText={setAdUnitInput}
         value={adUnitInput}
-        style={{color: 'blue'}}
+        style={{color: 'red'}}
+        placeholder='enter ad unit id'
       />
+
+
+      <TextInput
+        onChangeText={(text) => setValidAdSizes(text as any)}
+        value={validAdSizes as any}
+        style={{color: 'green'}}
+        placeholder='enter validAdSizes'
+      />
+
+      <TextInput
+        onChangeText={(text) => setValidAdTypes(text as any)}
+        value={validAdTypes as any}
+        style={{color: 'blue'}}
+        placeholder='enter validAdSizes'
+      />
+
+<View style={{width: 300, height: 250}}>
 
         <NativeAds
           adsManager={adsManager}
@@ -130,15 +150,16 @@ function GAMNudgeView(props: IProps) {
           // targeting={adTargeting}
           // style={styles.nativeAd}
           // adsManager={adsManager}
-          // validAdTypes={['native', 'template']}
+          validAdTypes={validAdTypes.split(',').map((i) => i.trim()) as any}
           // customTemplateIds={customTemplateIds}
           // onAdLoaded={this.onAdLoaded}
           // onAdFailedToLoad={(error) => {
           //   console.log(error);
           // }}
           // customClickTemplateIds={[]}
-          // validAdSizes={['300x250']}
+          validAdSizes={validAdSizes.split(',').map((i) => i.trim()) as any}
         />
+</View>
       </>
     );
   }
