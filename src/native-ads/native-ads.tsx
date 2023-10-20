@@ -3,50 +3,47 @@ import { StyleSheet, Text, View } from 'react-native';
 import withNativeAd from './withNativeAd';
 import { TriggerableView } from './TriggerableViewManager';
 import { gamADConfiguration } from '../adConfig';
+import type { NativeAd } from './native-ads.type';
 
 interface IProps {
-  nativeAd?: INativeAdElement;
+  nativeAd?: NativeAd;
   size?: string;
-}
-
-export interface INativeAdElement {
-  title?: string;
-  secondaryText?: string;
-  cta?: string;
-  image?: string;
-  logo?: string;
-  type?: string;
-  clickThroughUrl?: string
 }
 
 const NativeAdsView: React.FC = (props: IProps) => {
   const { nativeAd } = props;
-  if (nativeAd?.type && !['native', 'template'].includes(nativeAd?.type)) {
-    console.log("...RUSHI: NativeAdsView returning null", nativeAd)
-    return null;
-  }
+  // if (nativeAd?.type && !['native', 'template'].includes(nativeAd?.type)) {
+  //   console.log('...RUSHI: NativeAdsView returning null', nativeAd);
+  //   return null;
+  // }
 
-  const themeMode = gamADConfiguration.getThemeMode()
-  console.log("DEBUG: themeMode", themeMode)
+  const themeMode = gamADConfiguration.getThemeMode();
+  console.log('DEBUG: themeMode', themeMode);
 
   console.log('...RUSHI: NativeAds.tsx', nativeAd);
 
-  const NativeComponent = React.useMemo(() => gamADConfiguration.getNativeAdComponent(props.size), [props.size])
-  console.log("...RUSHI: NativeAdsView NativeComponent", NativeComponent, typeof(NativeComponent))
+  const NativeComponent = React.useMemo(
+    () => gamADConfiguration.getNativeAdComponent(props.size),
+    [props.size]
+  );
+  console.log(
+    '...RUSHI: NativeAdsView NativeComponent',
+    NativeComponent,
+    typeof NativeComponent
+  );
 
   return (
     <View style={styles.container}>
       <TriggerableView style={styles.triggerableView} />
-      {props.nativeAd && NativeComponent
-        ? <NativeComponent {...props.nativeAd}/>
-        : null}
-      <View style={{backgroundColor: 'yellow'}}>
+      {props.nativeAd && NativeComponent ? (
+        <NativeComponent {...props.nativeAd} />
+      ) : null}
+      <View style={{ backgroundColor: 'yellow' }}>
         <Text>Native ad is rendered</Text>
-        <Text>{props.nativeAd?.title ?? 'No Title'}</Text>
-        <Text>{props.nativeAd?.cta ?? 'No cta'}</Text>
-        <Text>{props.nativeAd?.logo ?? 'No logo'}</Text>
-        <Text>{props.nativeAd?.secondaryText ?? 'No secondaryText'}</Text>
-        <Text>{JSON.stringify(props.nativeAd)}</Text>
+        <Text>{props.nativeAd?.headline ?? 'No Title'}</Text>
+        <Text>{props.nativeAd?.call_to_action ?? 'No cta'}</Text>
+        <Text>{props.nativeAd?.secondary_image?.url ?? 'No logo'}</Text>
+        <Text>{props.nativeAd?.body ?? 'No secondaryText'}</Text>
       </View>
     </View>
   );
