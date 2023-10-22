@@ -1,11 +1,11 @@
-export interface NativeAd {
+export interface INativeAd {
   headline?: string;
   body?: string;
   call_to_action?: string;
   advertiser?: string;
-  image?: Image;
-  secondary_image?: Image;
-  tracking_urls_and_actions?: TrackingUrlsAndActions;
+  image?: IImage;
+  secondary_image?: IImage;
+  tracking_urls_and_actions?: ITrackingUrlsAndActions;
   type?: string;
   template_id?: string;
   is_first_party_ad?: boolean;
@@ -13,32 +13,32 @@ export interface NativeAd {
   is_privileged_process?: boolean;
   unify_response?: boolean;
   enable_omid?: boolean;
-  omid_settings?: OmidSettings;
+  omid_settings?: IOmidSettings;
 }
 
-interface Image {
+interface IImage {
   url?: string;
 }
 
-interface TrackingUrlsAndActions {
-  click_actions?: ClickAction[];
+interface ITrackingUrlsAndActions {
+  click_actions?: IClickAction[];
   impression_tracking_urls?: string[];
   google_click_tracking_url?: string;
   gws_query_id?: string;
   use_custom_tabs?: boolean;
-  signal_configuration?: SignalConfiguration;
+  signal_configuration?: ISignalConfiguration;
 }
 
-interface ClickAction {
+interface IClickAction {
   type?: number;
   url?: string;
 }
 
-interface SignalConfiguration {
+interface ISignalConfiguration {
   impression_ping?: number;
   click_ping?: number;
 }
 
-interface OmidSettings {
+interface IOmidSettings {
   omid_html?: string;
 }

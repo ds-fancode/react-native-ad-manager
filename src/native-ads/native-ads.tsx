@@ -3,10 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import withNativeAd from './withNativeAd';
 import { TriggerableView } from './TriggerableViewManager';
 import { gamADConfiguration } from '../adConfig';
-import type { NativeAd } from './native-ads.type';
+import type { INativeAd } from './native-ads.type';
 
 interface IProps {
-  nativeAd?: NativeAd;
+  nativeAd?: INativeAd;
   size?: string;
 }
 
