@@ -18,18 +18,18 @@ enum SegmentContentType {
   DEFAULT = 'DEFAULT',
   PERSONALISED = 'PERSONALISED',
   DOMESTIC = 'DOMESTIC',
-  INTERNATIONAL = 'INTERNATIONAL'
+  INTERNATIONAL = 'INTERNATIONAL',
 }
 
 enum ContentDataType {
   DEFAULT = 'DEFAULT',
   FANTASY = 'FANTASY',
-  RTH = 'RTH'
+  RTH = 'RTH',
 }
 
 export enum GamType {
   BANNER = 'BANNER',
-  NATIVE = 'NATIVE'
+  NATIVE = 'NATIVE',
 }
 
 export interface INudge {
@@ -50,7 +50,7 @@ export interface INudge {
 }
 
 export interface INudgeResponse {
-  data: INudgeSegmentResponse
+  data: INudgeSegmentResponse;
 }
 
 export interface SelectionOnEdges {
@@ -64,9 +64,9 @@ export interface SelectionOnEdges {
   shouldApplyAdvertiserId: boolean | null;
   bannerEndDate: string | null;
   impressionLink: string | null;
-  adunitID: string | null
-  adWidth: number | null
-  aspectRatio: string | null
+  adunitID: string | null;
+  adWidth: number | null;
+  aspectRatio: string | null;
   gamType: any;
   nativeAdUnitID: string | null;
   type: any;
@@ -88,15 +88,15 @@ export interface INudgeSegmentResponse {
   nudgeSegment: SelectionOnNudgeSegment;
 }
 
-export type IBannerProperties = SelectionOnEdges
+export type IBannerProperties = SelectionOnEdges;
 
 export interface IGamProperties {
-  adProperties: INudge
-  nudgeIndex: number
-  adUnitId: string
-  bannerSize: string
-  type: string
-  adType: string
-  errormessage?: string
-  bannerProperties?: IBannerProperties
+  adProperties: INudge;
+  nudgeIndex: number;
+  adUnitId: string;
+  bannerSize: string;
+  type: string;
+  adType: string;
+  errormessage?: string;
+  bannerProperties?: IBannerProperties;
 }
