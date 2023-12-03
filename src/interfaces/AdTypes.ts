@@ -100,3 +100,10 @@ export interface IGamProperties {
   errormessage?: string;
   bannerProperties?: IBannerProperties;
 }
+
+export interface IDefaultBannerProps {
+  imagesrc?: string;
+  link?: string;
+  onClickDefault?: (e: any, p: SelectionOnEdges) => void;
+  isExternal?: boolean;
+}

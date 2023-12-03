@@ -7,9 +7,9 @@ import { getTransformationStyle, getWidthHeight } from './utils';
 import DefaultBanner from './DefaultBanner';
 import type {
   IBannerProperties,
+  IDefaultBannerProps,
   IGamProperties,
   INudge,
-  SelectionOnEdges,
 } from '../interfaces/AdTypes';
 import { gamADConfiguration } from '../adConfig';
 
@@ -23,13 +23,8 @@ interface IProps {
   gamContainerStyle?: any;
   adunitID?: string | null;
   adSize?: string;
-  defaultBannerdata?: {
-    imagesrc?: string;
-    link?: string;
-    onClickDefault?: (e: any, p: SelectionOnEdges) => void;
-    isExternal?: boolean;
-    defaultBannerView?: () => React.ReactNode;
-  };
+  defaultBannerdata?: IDefaultBannerProps;
+  defaultBannerView?: (props: IDefaultBannerProps) => React.ReactNode;
   showGamBanner: boolean;
   adProperties: INudge;
   index: number;
@@ -182,8 +177,8 @@ export function GamBannerView(props: IProps) {
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
       {isGAMError || !props.showGamBanner || !adUnitID ? (
-        props.defaultBannerdata?.defaultBannerView ? (
-          props.defaultBannerdata!!.defaultBannerView()
+        props.defaultBannerView && props.defaultBannerdata ? (
+          props.defaultBannerView(props.defaultBannerdata)
         ) : (
           <DefaultBanner
             style={transformStyle}

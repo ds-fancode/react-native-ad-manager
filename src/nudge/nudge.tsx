@@ -8,6 +8,7 @@ import {
   BannerType,
   INudge,
   INudgeResponse,
+  IDefaultBannerProps,
 } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
@@ -25,7 +26,7 @@ interface IProps {
     onBannerAttempt?: (e: IGamProperties) => void;
     onDefaultClick?: (e: { url: string }) => void;
   };
-  defaultBannerView?: () => React.ReactNode;
+  defaultBannerView?: (props: IDefaultBannerProps) => React.ReactNode;
   isRefreshing?: boolean;
 }
 
@@ -113,8 +114,8 @@ function GAMNudgeView(props: IProps) {
                 imagesrc: item.item.artwork.src,
                 link: item.item.navigationLink,
                 isExternal: item.item.isExternal,
-                defaultBannerView: props.defaultBannerView,
               }}
+              defaultBannerView={props.defaultBannerView}
               showGamBanner={item.item.type === BannerType.GAM}
               onAdClicked={props.adCallbacks?.onClick}
               onAdFailed={props.adCallbacks?.onError}
