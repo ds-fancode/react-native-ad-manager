@@ -1,4 +1,3 @@
-import type { ViewStyle } from 'react-native';
 
 interface SelectionOnArtwork {
   src: string;
