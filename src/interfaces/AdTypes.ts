@@ -1,3 +1,5 @@
+import type { ViewStyle } from 'react-native';
+
 interface SelectionOnArtwork {
   src: string;
 }
@@ -107,4 +109,5 @@ export interface IDefaultBannerProps {
   onClickDefault?: (e: any, p: SelectionOnEdges) => void;
   isExternal?: boolean;
   index: number;
+  style?: any;
 }

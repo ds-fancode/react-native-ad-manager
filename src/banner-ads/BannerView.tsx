@@ -178,7 +178,10 @@ export function GamBannerView(props: IProps) {
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
       {isGAMError || !props.showGamBanner || !adUnitID ? (
         props.defaultBannerView && props.defaultBannerdata ? (
-          props.defaultBannerView(props.defaultBannerdata)
+          props.defaultBannerView({
+            ...props.defaultBannerdata,
+            style: transformStyle,
+          })
         ) : (
           <DefaultBanner
             style={transformStyle}
