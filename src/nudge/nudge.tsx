@@ -14,7 +14,7 @@ import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
 import { THEMES } from '../Constants';
 
-interface IProps {
+export interface IGAMNudgeProps {
   containerSize: string;
   adProperties: INudge;
   gamContainerStyle?: ViewStyle;
@@ -30,7 +30,7 @@ interface IProps {
   isRefreshing?: boolean;
 }
 
-function GAMNudgeView(props: IProps) {
+function GAMNudgeView(props: IGAMNudgeProps) {
   const [adRequest, setAdRequest] = React.useState<{
     data?: INudgeResponse;
     isError: boolean;
