@@ -106,4 +106,5 @@ export interface IDefaultBannerProps {
   link?: string;
   onClickDefault?: (e: any, p: SelectionOnEdges) => void;
   isExternal?: boolean;
+  index: number;
 }

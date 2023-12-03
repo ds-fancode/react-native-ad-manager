@@ -111,6 +111,7 @@ function GAMNudgeView(props: IProps) {
               containerSize={props.containerSize || '320x80'}
               gamContainerStyle={props.gamContainerStyle}
               defaultBannerdata={{
+                index: item.index,
                 imagesrc: item.item.artwork.src,
                 link: item.item.navigationLink,
                 isExternal: item.item.isExternal,
