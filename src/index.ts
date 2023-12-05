@@ -8,8 +8,9 @@ export { default as withNativeAd } from './native-ads/withNativeAd';
 
 export * from './AdManagerEvent';
 export * from './AdManagerTypes';
-export {GamBannerView} from './banner-ads/BannerView'
-export {GAMNudge} from './nudge/nudge'
-export {getAdSize} from './banner-ads/utils'
-export {gamADConfiguration} from './adConfig'
-export {IGamProperties} from './interfaces/AdTypes'
+export { GamBannerView } from './banner-ads/BannerView';
+export { GAMNudge } from './nudge/nudge';
+export { IGAMNudgeProps } from './nudge/nudge';
+export { getAdSize } from './banner-ads/utils';
+export { gamADConfiguration } from './adConfig';
+export { IGamProperties, IDefaultBannerProps } from './interfaces/AdTypes';
