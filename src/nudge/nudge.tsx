@@ -110,9 +110,10 @@ function GAMNudgeView(props: IGAMNudgeProps) {
               adunitID={adunitID}
               adSize={getAdSize(adWidth, aspectRatio)}
               containerSize={
-                props.containerSize || props.containerWidth
+                props.containerSize ??
+                (props.containerWidth
                   ? getAdSize(props.containerWidth, aspectRatio)
-                  : '320x80'
+                  : '320x80')
               }
               gamContainerStyle={props.gamContainerStyle}
               defaultBannerdata={{
