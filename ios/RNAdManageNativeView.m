@@ -162,9 +162,9 @@ static NSString *const kAdTypeTemplate = @"template";
         if (keywords != nil) {
             request.keywords = keywords;
         }
-        NSString *contentURL = [_targeting objectForKey:@"contentURL"];
-        if (contentURL != nil) {
-            request.contentURL = contentURL;
+        NSString *content_url = [_targeting objectForKey:@"content_url"];
+        if (content_url != nil) {
+            request.contentURL = content_url;
         }
         NSString *publisherProvidedID = [_targeting objectForKey:@"publisherProvidedID"];
         if (publisherProvidedID != nil) {
@@ -536,9 +536,12 @@ static NSString *const kAdTypeTemplate = @"template";
 //    NSLog(@"%s", __PRETTY_FUNCTION__);
 //}
 
-//- (void)nativeAdDidRecordImpression:(nonnull GADNativeAd *)nativeAd {
-//    NSLog(@"%s", __PRETTY_FUNCTION__);
-//}
+- (void)nativeAdDidRecordImpression:(nonnull GADNativeAd *)nativeAd {
+    if (self.onAdRecordImpression) {
+      self.onAdRecordImpression(@{});
+    }
+}
+
 - (void)nativeAdWillPresentScreen:(nonnull GADNativeAd *)nativeAd {
     if (self.onAdOpened) {
         self.onAdOpened(@{});
