@@ -127,10 +127,23 @@ export class Banner extends React.Component<
     this.loadBanner();
   }
 
+  componentWillUnmount() {
+    console.log('DEBUGxxx Banner unmounted: ', this.props.adUnitID);
+    this.destroyBanner();
+  }
+
   loadBanner() {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this),
       UIManager.getViewManagerConfig(ComponentName).Commands.loadBanner,
+      []
+    );
+  }
+
+  destroyBanner() {
+    UIManager.dispatchViewManagerCommand(
+      findNodeHandle(this),
+      UIManager.getViewManagerConfig(ComponentName).Commands.destroyBanner,
       []
     );
   }

@@ -2,9 +2,6 @@ package com.matejdr.admanager;
 
 import android.location.Location;
 import android.view.View;
-
-import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -20,9 +17,11 @@ import com.matejdr.admanager.enums.TargetingEnums;
 import com.matejdr.admanager.enums.TargetingEnums.TargetingTypes;
 import com.matejdr.admanager.utils.AdSizeUtil;
 import com.matejdr.admanager.utils.Targeting;
-
 import java.util.ArrayList;
 import java.util.Map;
+
+
+
 
 public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView> {
 
@@ -43,6 +42,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     public static final String EVENT_APP_EVENT = "onAppEvent";
 
     public static final int COMMAND_LOAD_BANNER = 1;
+    public static final int COMMAND_DESTROY_BANNER = 2;
     private final ReactApplicationContext applicationContext;
 
     public RNAdManagerBannerViewManager(ReactApplicationContext context) {
@@ -191,7 +191,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     @Nullable
     @Override
     public Map<String, Integer> getCommandsMap() {
-        return MapBuilder.of("loadBanner", COMMAND_LOAD_BANNER);
+        return MapBuilder.of("loadBanner", COMMAND_LOAD_BANNER, "destroyBanner", COMMAND_DESTROY_BANNER);
     }
 
     @Override
@@ -199,6 +199,9 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
         switch (commandId) {
             case COMMAND_LOAD_BANNER:
                 root.loadBanner();
+                break;
+            case COMMAND_DESTROY_BANNER:
+                root.destoryBanner();
                 break;
         }
     }

@@ -55,6 +55,7 @@ export function GamBannerView(props: IProps) {
   }, [props.index, adUnitID]);
 
   const onAdfailed = React.useCallback((error: any) => {
+    console.log('DEBUGxxx: GamBannerView: onAdfailed: ', error);
     setIsGamError(true);
     setIsAdLoaded(true);
     props.onAdFailed &&
@@ -104,8 +105,13 @@ export function GamBannerView(props: IProps) {
   const [showBanner, setShowBanner] = React.useState(true);
 
   React.useEffect(() => {
+    if(isGAMError || props.adProperties.adIdentity === 'MATCH_DETAIL_COMMENTARY') {
+      console.log('DEBUGxxx: GamBannerView: return: ', isGAMError, props.adProperties.adIdentity);
+      return
+    }
     timeRef.current.value = setTimeout(
       () => {
+        console.log('DEBUGxxx: GamBannerView: refresh Banner: ', showBanner, props.adunitID, gamADConfiguration.getRefreshInterval(), gamADConfiguration.getAdStaticInterval());
         if (!showBanner) {
           setIsGamError(false);
           setIsAdLoaded(false);
@@ -116,7 +122,13 @@ export function GamBannerView(props: IProps) {
         ? gamADConfiguration.getRefreshInterval()
         : gamADConfiguration.getAdStaticInterval()
     );
-  }, [showBanner]);
+  }, [showBanner, isGAMError]);
+
+  React.useEffect(() => {
+    if(isGAMError) {
+      clearTimeout(timeRef.current.value);
+    }
+  }, [isGAMError]);
 
   const transformStyle = React.useMemo(
     () =>
