@@ -8,6 +8,9 @@ import android.util.Log;
 import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -18,14 +21,18 @@ import com.facebook.react.views.view.ReactViewGroup;
 import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.RequestConfiguration;
 import com.google.android.gms.ads.admanager.AdManagerAdRequest;
 import com.google.android.gms.ads.admanager.AdManagerAdView;
+import com.google.android.gms.ads.admanager.AppEventListener;
 import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 
 
@@ -440,6 +447,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.categoryExclusions = categoryExclusions;
         } catch (Exception exception) { }
     }
+
+//    @Override
+//    public void onDropViewInstance(@NonNull BannerAdView view) {
+//        Log.i("DEBUGxxx ADS", "onDropViewInstance: " + this.adUnitID);
+//        super.onDropViewInstance(view);
+//    }
 
     public void setKeywords(String[] keywords) {
         try {

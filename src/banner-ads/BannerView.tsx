@@ -105,13 +105,22 @@ export function GamBannerView(props: IProps) {
   const [showBanner, setShowBanner] = React.useState(true);
 
   React.useEffect(() => {
-    if(isGAMError || props.adProperties.adIdentity === 'MATCH_DETAIL_COMMENTARY') {
-      console.log('DEBUGxxx: GamBannerView: return: ', isGAMError, props.adProperties.adIdentity);
-      return
+    if (
+      !isGAMError ||
+      props.adProperties.adIdentity === 'MATCH_DETAIL_COMMENTARY' ||
+      timeRef.current.value
+    ) {
+      return;
     }
     timeRef.current.value = setTimeout(
       () => {
-        console.log('DEBUGxxx: GamBannerView: refresh Banner: ', showBanner, props.adunitID, gamADConfiguration.getRefreshInterval(), gamADConfiguration.getAdStaticInterval());
+        console.log(
+          'DEBUGxxx: GamBannerView: refresh Banner: ',
+          showBanner,
+          props.adunitID,
+          gamADConfiguration.getRefreshInterval(),
+          gamADConfiguration.getAdStaticInterval()
+        );
         if (!showBanner) {
           setIsGamError(false);
           setIsAdLoaded(false);
@@ -125,7 +134,7 @@ export function GamBannerView(props: IProps) {
   }, [showBanner, isGAMError]);
 
   React.useEffect(() => {
-    if(isGAMError) {
+    if (!isGAMError) {
       clearTimeout(timeRef.current.value);
     }
   }, [isGAMError]);
