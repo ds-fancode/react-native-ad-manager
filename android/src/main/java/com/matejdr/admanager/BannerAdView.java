@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,11 +29,13 @@ import com.google.android.gms.ads.admanager.AdManagerAdView;
 import com.google.android.gms.ads.admanager.AppEventListener;
 import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
-import android.view.Choreographer;
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.List;
+
+
+
+
+
 
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
 
@@ -86,13 +90,14 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     private void createAdView() {
         try {
             if (this.adView != null) {
+                Log.i("DEBUGxxx ADS", "createAdView: ad is not null");
                 this.adView.destroy();
             }
 
             final Context context = getContext();
 
             this.adView = new AdManagerAdView(context);
-
+            Log.i("DEBUGxxx ADS", "createAdView: create Ad");
             this.adView.setAppEventListener(this);
             this.adView.setAdListener(new AdListener() {
                 @Override
@@ -166,7 +171,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 }
 
             });
-
+            this.removeAllViews();
             this.addView(this.adView);
         } catch (Exception exception) {
             this.onException(exception);
@@ -224,10 +229,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     private void updateLayout() {
         try {
+            Log.i("DEBUGxxx ADS", "updateLayout: statrt");
             if (!isFluid()) {
                 return;
             }
-
+            Log.i("DEBUGxxx ADS", "updateLayout: not fluid");
             if (adView == null) {
                 return;
             }
@@ -395,7 +401,18 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
             AdManagerAdRequest adRequest = adRequestBuilder.build();
             this.adView.loadAd(adRequest);
+            Log.i("DEBUGxxx ADS", "loadBanner: statrt" + this.adUnitID);
         } catch (Exception exception) { this.onException(exception); }
+    }
+
+    public void destoryBanner() {
+        try {
+            Log.i("DEBUGxxx ADS", "destoryBanner: statrt: " + this.adUnitID);
+            if (this.adView != null) {
+                this.currentActivityContext = null;
+                this.adView.destroy();
+            }
+        } catch (Exception exception) { };
     }
 
     public void setAdUnitID(String adUnitID) {
@@ -430,6 +447,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             this.categoryExclusions = categoryExclusions;
         } catch (Exception exception) { }
     }
+
+//    @Override
+//    public void onDropViewInstance(@NonNull BannerAdView view) {
+//        Log.i("DEBUGxxx ADS", "onDropViewInstance: " + this.adUnitID);
+//        super.onDropViewInstance(view);
+//    }
 
     public void setKeywords(String[] keywords) {
         try {
@@ -476,6 +499,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     @Override
     public void onAppEvent(String name, String info) {
         try {
+            Log.i("DEBUGxxx ADS", "onAppEvent: statrt: " + this.adUnitID + " " + name + " " + info);
             this.isFluid = true;
 
             this.updateLayout();
@@ -508,6 +532,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     @Override
     public void onHostDestroy() {
         try {
+            Log.i("DEBUGxxx ADS", "onHostDestroy: statrt: " + this.adUnitID);
             if (this.adView != null) {
                 this.currentActivityContext = null;
                 this.adView.destroy();
