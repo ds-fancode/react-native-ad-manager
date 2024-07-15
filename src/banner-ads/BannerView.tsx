@@ -34,7 +34,6 @@ interface IProps {
 export function GamBannerView(props: IProps) {
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false);
-  // const timeRef = React.useRef<{ value: any }>({ value: null });
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || '';
@@ -55,7 +54,6 @@ export function GamBannerView(props: IProps) {
   }, [props.index, adUnitID]);
 
   const onAdfailed = React.useCallback((error: any) => {
-    console.log('DEBUGxxx: GamBannerView: onAdfailed: ', error);
     setIsGamError(true);
     setIsAdLoaded(true);
     props.onAdFailed &&
@@ -102,43 +100,6 @@ export function GamBannerView(props: IProps) {
     }
   }, []);
 
-  // const [showBanner, setShowBanner] = React.useState(true);
-
-  // React.useEffect(() => {
-  //   if (
-  //     !isGAMError ||
-  //     props.adProperties.adIdentity === 'MATCH_DETAIL_COMMENTARY' ||
-  //     timeRef.current.value
-  //   ) {
-  //     return;
-  //   }
-  //   timeRef.current.value = setTimeout(
-  //     () => {
-  //       console.log(
-  //         'DEBUGxxx: GamBannerView: refresh Banner: ',
-  //         showBanner,
-  //         props.adunitID,
-  //         gamADConfiguration.getRefreshInterval(),
-  //         gamADConfiguration.getAdStaticInterval()
-  //       );
-  //       if (!showBanner) {
-  //         setIsGamError(false);
-  //         setIsAdLoaded(false);
-  //       }
-  //       setShowBanner((_) => !showBanner);
-  //     },
-  //     showBanner
-  //       ? gamADConfiguration.getRefreshInterval()
-  //       : gamADConfiguration.getAdStaticInterval()
-  //   );
-  // }, [showBanner, isGAMError]);
-
-  // React.useEffect(() => {
-  //   if (!isGAMError) {
-  //     clearTimeout(timeRef.current.value);
-  //   }
-  // }, [isGAMError]);
-
   const transformStyle = React.useMemo(
     () =>
       getTransformationStyle(
@@ -152,11 +113,6 @@ export function GamBannerView(props: IProps) {
 
   React.useEffect(() => {
     props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties });
-    return () => {
-      // if (timeRef.current.value) {
-      //   clearTimeout(timeRef.current.value);
-      // }
-    };
   }, []);
 
   const containerStyles = React.useMemo(() => {
