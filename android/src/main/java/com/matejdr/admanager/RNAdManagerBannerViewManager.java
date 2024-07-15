@@ -61,7 +61,6 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
     @Override
     public void onDropViewInstance(BannerAdView view) {
         if (view.adView != null) {
-            Log.i("DEBUGxxx ADS", "onDropViewInstance: " + view.adUnitID);
             view.adView.setAppEventListener(null);
             view.adView.setAdListener(null);
             view.destoryBanner();
