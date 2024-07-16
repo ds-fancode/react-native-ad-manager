@@ -34,7 +34,6 @@ interface IProps {
 export function GamBannerView(props: IProps) {
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false);
-  const timeRef = React.useRef<{ value: any }>({ value: null });
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || '';
@@ -101,23 +100,6 @@ export function GamBannerView(props: IProps) {
     }
   }, []);
 
-  const [showBanner, setShowBanner] = React.useState(true);
-
-  React.useEffect(() => {
-    timeRef.current.value = setTimeout(
-      () => {
-        if (!showBanner) {
-          setIsGamError(false);
-          setIsAdLoaded(false);
-        }
-        setShowBanner((_) => !showBanner);
-      },
-      showBanner
-        ? gamADConfiguration.getRefreshInterval()
-        : gamADConfiguration.getAdStaticInterval()
-    );
-  }, [showBanner]);
-
   const transformStyle = React.useMemo(
     () =>
       getTransformationStyle(
@@ -131,11 +113,6 @@ export function GamBannerView(props: IProps) {
 
   React.useEffect(() => {
     props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties });
-    return () => {
-      if (timeRef.current.value) {
-        clearTimeout(timeRef.current.value);
-      }
-    };
   }, []);
 
   const containerStyles = React.useMemo(() => {
@@ -190,10 +167,8 @@ export function GamBannerView(props: IProps) {
             index={props.index}
           />
         )
-      ) : showBanner ? (
-        BannerComponent
       ) : (
-        <PlaceHolderView />
+        BannerComponent
       )}
     </View>
   );

@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,11 +29,11 @@ import com.google.android.gms.ads.admanager.AdManagerAdView;
 import com.google.android.gms.ads.admanager.AppEventListener;
 import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
-import android.view.Choreographer;
-import android.view.View;
-
 import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
 
@@ -57,7 +59,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         super(context);
 
         try {
-            // currentActivityContext = applicationContext.getCurrentActivity();
             applicationContext.addLifecycleEventListener(this);
             this.createAdView();
         } catch (Exception exception) { this.onException(exception); }
@@ -92,7 +93,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             final Context context = getContext();
 
             this.adView = new AdManagerAdView(context);
-
             this.adView.setAppEventListener(this);
             this.adView.setAdListener(new AdListener() {
                 @Override
@@ -166,7 +166,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 }
 
             });
-
+            this.removeAllViews();
             this.addView(this.adView);
         } catch (Exception exception) {
             this.onException(exception);
@@ -227,7 +227,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             if (!isFluid()) {
                 return;
             }
-
             if (adView == null) {
                 return;
             }
@@ -396,6 +395,15 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             AdManagerAdRequest adRequest = adRequestBuilder.build();
             this.adView.loadAd(adRequest);
         } catch (Exception exception) { this.onException(exception); }
+    }
+
+    public void destoryBanner() {
+        try {
+            if (this.adView != null) {
+                this.currentActivityContext = null;
+                this.adView.destroy();
+            }
+        } catch (Exception exception) { };
     }
 
     public void setAdUnitID(String adUnitID) {
