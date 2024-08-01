@@ -1,6 +1,7 @@
 package com.matejdr.admanager;
 
 import android.location.Location;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -20,9 +21,11 @@ import com.matejdr.admanager.enums.TargetingEnums;
 import com.matejdr.admanager.enums.TargetingEnums.TargetingTypes;
 import com.matejdr.admanager.utils.AdSizeUtil;
 import com.matejdr.admanager.utils.Targeting;
-
 import java.util.ArrayList;
 import java.util.Map;
+
+
+
 
 public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView> {
 
@@ -58,10 +61,10 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
 
     @Override
     public void onDropViewInstance(BannerAdView view) {
-        if (view.adManagerAdView != null) {
-            view.adManagerAdView.setAppEventListener(null);
-            view.adManagerAdView.setAdListener(null);
-            view.adManagerAdView.destroy();
+        if (view.adView != null) {
+            view.adView.setAppEventListener(null);
+            view.adView.setAdListener(null);
+            view.destoryBanner();
         }
         super.onDropViewInstance(view);
     }

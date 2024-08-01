@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Choreographer;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
@@ -86,8 +90,93 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 this.adManagerAdView = null;
             }
 
-        } catch (Exception e) {
-            // ignore it
+            final Context context = getContext();
+
+            this.adView = new AdManagerAdView(context);
+            this.adView.setAppEventListener(this);
+            this.adView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    try {
+                        AdSize adSize = adView.getAdSize();
+                        Context context = getContext();
+
+                        int width = adSize.getWidthInPixels(context);
+                        int height = adSize.getHeightInPixels(context);
+
+                        int left = adView.getLeft();
+                        int top = adView.getTop();
+
+                        adView.measure(width, height);
+                        adView.layout(left, top, left + width, top + height);
+
+                        sendOnSizeChangeEvent();
+                        WritableMap ad = Arguments.createMap();
+                        ad.putString("type", "banner");
+
+                        WritableMap gadSize = Arguments.createMap();
+
+                        int adWidth = adSize.getWidth();
+                        int adHeight = adSize.getHeight();
+
+                        gadSize.putDouble("width", adWidth);
+                        gadSize.putDouble("height", adHeight);
+
+                        ad.putMap("gadSize", gadSize);
+
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
+                        setupLayout();
+                    } catch (Exception exception) { }
+                }
+
+                @Override
+                public void onAdFailedToLoad(LoadAdError adError) {
+                    try {
+                        String errorMessage = "Unknown error";
+                        switch (adError.getCode()) {
+                            case AdManagerAdRequest.ERROR_CODE_INTERNAL_ERROR:
+                                errorMessage = "Internal error, an invalid response was received from the ad server.";
+                                break;
+                            case AdManagerAdRequest.ERROR_CODE_INVALID_REQUEST:
+                                errorMessage = "Invalid ad request, possibly an incorrect ad unit ID was given.";
+                                break;
+                            case AdManagerAdRequest.ERROR_CODE_NETWORK_ERROR:
+                                errorMessage = "The ad request was unsuccessful due to network connectivity.";
+                                break;
+                            case AdManagerAdRequest.ERROR_CODE_NO_FILL:
+                                errorMessage = "The ad request was successful, but no ad was returned due to lack of ad inventory.";
+                                break;
+                        }
+                        WritableMap event = Arguments.createMap();
+                        WritableMap error = Arguments.createMap();
+                        error.putString("message", errorMessage);
+                        event.putMap("error", error);
+                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_FAILED_TO_LOAD, event);
+                    } catch (Exception exception) { }
+                }
+
+                @Override
+                public void onAdOpened() {
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_OPENED, null);
+                }
+
+                @Override
+                public void onAdClosed() {
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_CLOSED, null);
+                }
+
+            });
+            this.removeAllViews();
+            this.addView(this.adView);
+        } catch (Exception exception) {
+            this.onException(exception);
+        }
+    }
+
+    private class MeasureAndLayoutRunnable implements Runnable {
+        @Override
+        public void run() {
+            updateLayout();
         }
     }
 
@@ -116,21 +205,50 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         ReactViewGroup.LayoutParams.WRAP_CONTENT);
                 this.adManagerAdView.setLayoutParams(layoutParams);
             }
+            if (adView == null) {
+                return;
+            }
 
-            this.adManagerAdView.setAppEventListener(this);
-            this.adManagerAdView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    if (isFluid()) {
-                        top = 0;
-                        left = 0;
-                        width = getWidth();
-                        height = getHeight();
-                    } else {
-                        top = adManagerAdView.getTop();
-                        left = adManagerAdView.getLeft();
-                        width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
-                        height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+            View parent = (View) adView.getParent();
+
+            if (parent == null) {
+                return;
+            }
+
+            int width = parent.getWidth();
+            int height = parent.getHeight();
+
+            if (cachedWidth == width && cachedHeight == height) {
+                return;
+            }
+
+            cachedWidth = width;
+            cachedHeight = height;
+
+            // In case of fluid ads, every GAD view and their subviews must be laid out by hand,
+            // otherwise the web view won't align to the container bounds.
+            measureAndLayout(adView, width, height);
+
+            ViewGroup child = (ViewGroup) adView.getChildAt(0);
+
+            if (child != null) {
+                measureAndLayout(child, width, height);
+
+                ViewGroup webView = (ViewGroup) child.getChildAt(0);
+
+                if (webView != null) {
+                    measureAndLayout(webView, width, height);
+
+                    ViewGroup internalChild = (ViewGroup) webView.getChildAt(0);
+
+                    if (internalChild != null) {
+                        measureAndLayout(internalChild, width, height);
+
+                        ViewGroup leafNode = (ViewGroup) internalChild.getChildAt(0);
+
+                        if (leafNode != null) {
+                            measureAndLayout(leafNode, width, height);
+                        }
                     }
 
                     if (!isFluid()) {
@@ -349,6 +467,15 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             // non-critical error, so ignore.
         }
 
+    }
+
+    public void destoryBanner() {
+        try {
+            if (this.adView != null) {
+                this.currentActivityContext = null;
+                this.adView.destroy();
+            }
+        } catch (Exception exception) { };
     }
 
     public void setAdUnitID(String adUnitID) {
