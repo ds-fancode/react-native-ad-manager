@@ -72,7 +72,7 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
     CustomTargeting[] customTargeting;
     String[] categoryExclusions;
     String[] keywords;
-    String contentURL;
+    String content_url;
     String publisherProvidedID;
     Location location;
     String correlator;
@@ -224,6 +224,12 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
                 WritableMap event = Arguments.createMap();
                 sendEvent(RNAdManagerNativeViewManager.EVENT_AD_CLOSED, event);
             }
+
+            @Override
+            public void onAdImpression() {
+                WritableMap event = Arguments.createMap();
+                sendEvent(RNAdManagerNativeViewManager.EVENT_AD_RECORD_IMPRESSION, event);
+            }
         }).withNativeAdOptions(adOptions);
 
         adLoader = builder.build();
@@ -299,15 +305,18 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
                                 }
                             }
                         }
-                        if (contentURL != null) {
-                            adRequestBuilder.setContentUrl(contentURL);
+                        if (content_url != null) {
+                            adRequestBuilder.setContentUrl(content_url);
                         }
                         if (publisherProvidedID != null) {
                             adRequestBuilder.setPublisherProvidedId(publisherProvidedID);
                         }
-                        if (location != null) {
-                            adRequestBuilder.setLocation(location);
-                        }
+
+                        // setLocation() became obsolete since GMA SDK version 21.0.0, link reference below:
+                        //          https://developers.google.com/admob/android/rel-notes                        
+                        //if (location != null) {
+                        //    adRequestBuilder.setLocation(location);
+                        //}
                     }
 
                     AdManagerAdRequest adRequest = adRequestBuilder.build();
@@ -614,8 +623,8 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
         this.keywords = keywords;
     }
 
-    public void setContentURL(String contentURL) {
-        this.contentURL = contentURL;
+    public void setContentURL(String content_url) {
+        this.content_url = content_url;
     }
 
     public void setPublisherProvidedID(String publisherProvidedID) {

@@ -37,12 +37,18 @@
     "ios",
     "android"
   ],
-  "homepage": "https://github.com/NZME/react-native-ad-manager#readme",
   "repository": "https://github.com/raja-kedia/react-native-ad-manager",
   "author": "Raja kedia <raja.kedia@fancode.com> (https://github.com/raja-kedia)",
   "license": "MIT",
   "licenseFilename": "LICENSE",
   "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/NZME/react-native-ad-manager/issues"
+  },
+  "homepage": "https://github.com/NZME/react-native-ad-manager#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
     "@react-native-community/eslint-config": "^2.0.0",
