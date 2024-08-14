@@ -84,7 +84,11 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     @Override
     public void requestLayout() {
         super.requestLayout();
-        post(new MeasureAndLayoutRunnable());
+	try {
+            if (isFluid()) {
+                post(new MeasureAndLayoutRunnable());
+            }
+        } catch (Exception exception) { }
     }
     private void createAdView() {
         try {
