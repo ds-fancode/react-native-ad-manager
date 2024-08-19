@@ -1,15 +1,15 @@
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Linking, StyleSheet, View } from 'react-native';
 import { PlaceHolderView } from './Placeholder';
 import { Banner } from '../CTKAdManagerBanner';
 import Interstitial from '../CTKAdManagerInterstitial';
 import { getTransformationStyle, getWidthHeight } from './utils';
 import DefaultBanner from './DefaultBanner';
-import {
+import type {
   IBannerProperties,
+  IDefaultBannerProps,
   IGamProperties,
   INudge,
-  SelectionOnEdges,
 } from '../interfaces/AdTypes';
 import { gamADConfiguration } from '../adConfig';
 
@@ -23,12 +23,8 @@ interface IProps {
   gamContainerStyle?: any;
   adunitID?: string | null;
   adSize?: string;
-  defaultBannerdata?: {
-    imagesrc?: string;
-    link?: string;
-    onClickDefault?: (e: any, p: SelectionOnEdges) => void;
-    isExternal?: boolean;
-  };
+  defaultBannerdata?: IDefaultBannerProps;
+  defaultBannerView?: (props: IDefaultBannerProps) => React.ReactNode;
   showGamBanner: boolean;
   adProperties: INudge;
   index: number;
@@ -38,7 +34,6 @@ interface IProps {
 export function GamBannerView(props: IProps) {
   const [containerWidth, containerHeight] = getWidthHeight(props.containerSize);
   const [adLoaded, setIsAdLoaded] = React.useState(false);
-  const timeRef = React.useRef<{ value: any }>({ value: null });
 
   const adUnitID = props.adunitID || '';
   const adSize = props.adSize || '';
@@ -79,6 +74,13 @@ export function GamBannerView(props: IProps) {
 
   const onDefaultClick = React.useCallback(() => {
     if (
+      props.defaultBannerdata?.link &&
+      (props.defaultBannerdata.isExternal ||
+        gamADConfiguration.getIsExternalRedirectionEnabled())
+    ) {
+      Linking.openURL(props.defaultBannerdata.link).then().catch();
+    }
+    if (
       props.onDefaultClick &&
       props.defaultBannerdata?.link &&
       !props.defaultBannerdata.isExternal
@@ -98,23 +100,6 @@ export function GamBannerView(props: IProps) {
     }
   }, []);
 
-  const [showBanner, setShowBanner] = React.useState(true);
-
-  React.useEffect(() => {
-    timeRef.current.value = setTimeout(
-      () => {
-        if (!showBanner) {
-          setIsGamError(false);
-          setIsAdLoaded(false);
-        }
-        setShowBanner((_) => !showBanner);
-      },
-      showBanner
-        ? gamADConfiguration.getRefreshInterval()
-        : gamADConfiguration.getAdStaticInterval()
-    );
-  }, [showBanner]);
-
   const transformStyle = React.useMemo(
     () =>
       getTransformationStyle(
@@ -128,11 +113,6 @@ export function GamBannerView(props: IProps) {
 
   React.useEffect(() => {
     props.onBannerAttempt && props.onBannerAttempt({ ...gamProperties });
-    return () => {
-      if (timeRef.current.value) {
-        clearTimeout(timeRef.current.value);
-      }
-    };
   }, []);
 
   const containerStyles = React.useMemo(() => {
@@ -173,18 +153,22 @@ export function GamBannerView(props: IProps) {
   return (
     <View style={containerStyles}>
       {!adLoaded && props.showGamBanner ? <PlaceHolderView /> : null}
-
       {isGAMError || !props.showGamBanner || !adUnitID ? (
-        <DefaultBanner
-          style={transformStyle}
-          {...props.defaultBannerdata}
-          onClick={onDefaultClick}
-          index={props.index}
-        />
-      ) : showBanner ? (
-        BannerComponent
+        props.defaultBannerView && props.defaultBannerdata ? (
+          props.defaultBannerView({
+            ...props.defaultBannerdata,
+            style: transformStyle,
+          })
+        ) : (
+          <DefaultBanner
+            style={transformStyle}
+            {...props.defaultBannerdata}
+            onClick={onDefaultClick}
+            index={props.index}
+          />
+        )
       ) : (
-        <PlaceHolderView />
+        BannerComponent
       )}
     </View>
   );

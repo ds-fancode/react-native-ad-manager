@@ -17,6 +17,7 @@ import {
   INudgeResponse,
   GamType,
   SelectionOnEdges,
+  IDefaultBannerProps,
 } from '../interfaces/AdTypes';
 import { fetchQuery } from '../networkmanager/network';
 import { gamADConfiguration } from '../adConfig';
@@ -26,23 +27,9 @@ import { NativeAdsManager } from '../native-ads/NativeAdsManager';
 import Interstitial from '../CTKAdManagerInterstitial';
 // const TEST_AD_TEMPLATE_ID = '10104090';
 
-export const correlator = '0333965063464928';
-export const adTargeting = {
-  customTargeting: {
-    adtype: 'rectangle',
-    arc_uuid: '5ce210e7f45fef6c88f16bf0',
-    av: '2.0',
-    pos: '1',
-    pt: 'home',
-    subscriber: 'true',
-  },
-  publisherProvidedID: '6c43f0be912249289a0286edab3fbb72',
-};
-
-let x = true;
-
-interface IProps {
+export interface IGAMNudgeProps {
   containerSize: string;
+  containerWidth?: number;
   adProperties: INudge;
   gamContainerStyle?: ViewStyle;
   containerStyle?: ViewStyle;
@@ -53,6 +40,7 @@ interface IProps {
     onBannerAttempt?: (e: IGamProperties) => void;
     onDefaultClick?: (e: { url: string }) => void;
   };
+  defaultBannerView?: (props: IDefaultBannerProps) => React.ReactNode;
   isRefreshing?: boolean;
 }
 
@@ -96,7 +84,7 @@ const NudgeItem = (props: {
   ) : null;
 };
 
-function GAMNudgeView(props: IProps) {
+function GAMNudgeView(props: IGAMNudgeProps) {
   const [adRequest, setAdRequest] = React.useState<{
     data?: INudgeResponse;
     isError: boolean;
@@ -104,14 +92,19 @@ function GAMNudgeView(props: IProps) {
   const [isGAMError, setIsGamError] = React.useState(false);
 
   console.log('..RUSHI: GamNudgeView', isGAMError);
-  const [adUnitInput, setAdUnitInput] = React.useState('/22693816480/nudge//native');
-  const [validAdSizes, setValidAdSizes] = React.useState('300x250,320x100,300x50');
+  const [adUnitInput, setAdUnitInput] = React.useState(
+    '/22693816480/nudge//native'
+  );
+  const [validAdSizes, setValidAdSizes] = React.useState(
+    '300x250,320x100,300x50'
+  );
   const [validAdTypes, setValidAdTypes] = React.useState('native,template');
   if (x) {
     console.log('..RUSHI: Test inside of condition');
-    const adsManager = React.useMemo(() => new NativeAdsManager(adUnitInput, [
-      Interstitial.simulatorId,
-    ]), [adUnitInput]);
+    const adsManager = React.useMemo(
+      () => new NativeAdsManager(adUnitInput, [Interstitial.simulatorId]),
+      [adUnitInput]
+    );
 
     // const customTemplateIds = [TEST_AD_TEMPLATE_ID];
     return (
@@ -120,46 +113,44 @@ function GAMNudgeView(props: IProps) {
           /22693816480/nudge//native
         </Text>
         <TextInput
-        onChangeText={setAdUnitInput}
-        value={adUnitInput}
-        style={{color: 'red'}}
-        placeholder='enter ad unit id'
-      />
-
-
-      <TextInput
-        onChangeText={(text) => setValidAdSizes(text as any)}
-        value={validAdSizes as any}
-        style={{color: 'green'}}
-        placeholder='enter validAdSizes'
-      />
-
-      <TextInput
-        onChangeText={(text) => setValidAdTypes(text as any)}
-        value={validAdTypes as any}
-        style={{color: 'blue'}}
-        placeholder='enter validAdSizes'
-      />
-
-<View style={{width: 300, height: 250}}>
-
-        <NativeAds
-          adsManager={adsManager}
-          key={adUnitInput}
-          // correlator={correlator}
-          // targeting={adTargeting}
-          // style={styles.nativeAd}
-          // adsManager={adsManager}
-          validAdTypes={validAdTypes.split(',').map((i) => i.trim()) as any}
-          // customTemplateIds={customTemplateIds}
-          // onAdLoaded={this.onAdLoaded}
-          // onAdFailedToLoad={(error) => {
-          //   console.log(error);
-          // }}
-          // customClickTemplateIds={[]}
-          validAdSizes={validAdSizes.split(',').map((i) => i.trim()) as any}
+          onChangeText={setAdUnitInput}
+          value={adUnitInput}
+          style={{ color: 'red' }}
+          placeholder="enter ad unit id"
         />
-</View>
+
+        <TextInput
+          onChangeText={(text) => setValidAdSizes(text as any)}
+          value={validAdSizes as any}
+          style={{ color: 'green' }}
+          placeholder="enter validAdSizes"
+        />
+
+        <TextInput
+          onChangeText={(text) => setValidAdTypes(text as any)}
+          value={validAdTypes as any}
+          style={{ color: 'blue' }}
+          placeholder="enter validAdSizes"
+        />
+
+        <View style={{ width: 300, height: 250 }}>
+          <NativeAds
+            adsManager={adsManager}
+            key={adUnitInput}
+            // correlator={correlator}
+            // targeting={adTargeting}
+            // style={styles.nativeAd}
+            // adsManager={adsManager}
+            validAdTypes={validAdTypes.split(',').map((i) => i.trim()) as any}
+            // customTemplateIds={customTemplateIds}
+            // onAdLoaded={this.onAdLoaded}
+            // onAdFailedToLoad={(error) => {
+            //   console.log(error);
+            // }}
+            // customClickTemplateIds={[]}
+            validAdSizes={validAdSizes.split(',').map((i) => i.trim()) as any}
+          />
+        </View>
       </>
     );
   }
@@ -225,22 +216,46 @@ function GAMNudgeView(props: IProps) {
     );
   }
 
-  const renderItem = React.useCallback(
-    (item: ListRenderItemInfo<SelectionOnEdges>) => {
-      return <NudgeItem item={item} adProps={props} />;
-    },
-    [props]
-  );
-
   const keyExtractor = React.useCallback((item: SelectionOnEdges) => {
     return item.id + item.adunitID;
-  } , []);
+  }, []);
 
   return isGAMError ? null : (
     <View>
       <FlatList
         showsHorizontalScrollIndicator={false}
-        renderItem={renderItem}
+        renderItem={(item) => {
+          const { adunitID, adWidth, aspectRatio } = item.item;
+          return (
+            <GamBannerView
+              adunitID={adunitID}
+              adSize={getAdSize(adWidth, aspectRatio)}
+              containerSize={
+                props.containerSize ??
+                (props.containerWidth
+                  ? getAdSize(props.containerWidth, aspectRatio)
+                  : '320x80')
+              }
+              gamContainerStyle={props.gamContainerStyle}
+              defaultBannerdata={{
+                index: item.index,
+                imagesrc: item.item.artwork.src,
+                link: item.item.navigationLink,
+                isExternal: item.item.isExternal,
+              }}
+              defaultBannerView={props.defaultBannerView}
+              showGamBanner={item.item.type === BannerType.GAM}
+              onAdClicked={props.adCallbacks?.onClick}
+              onAdFailed={props.adCallbacks?.onError}
+              onAdLoaded={props.adCallbacks?.onLoad}
+              onBannerAttempt={props.adCallbacks?.onBannerAttempt}
+              onDefaultClick={props.adCallbacks?.onDefaultClick}
+              adProperties={props.adProperties}
+              index={item.index}
+              bannerProperties={item.item}
+            />
+          );
+        }}
         data={NudgeData}
         horizontal
         keyExtractor={keyExtractor}
