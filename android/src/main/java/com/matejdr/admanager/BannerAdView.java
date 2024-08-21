@@ -3,6 +3,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -27,7 +30,7 @@ import java.util.List;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
     protected AdManagerAdView adManagerAdView;
-    ReactApplicationContext currentRNcontext;
+//    ReactApplicationContext currentRNcontext;
     Activity currentActivityContext;
     String[] testDevices;
     AdSize[] validAdSizes;
@@ -49,8 +52,8 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     public BannerAdView(final Context context, ReactApplicationContext applicationContext) {
         super(context);
         try {
-            currentRNcontext = applicationContext;
-            currentActivityContext = applicationContext.getCurrentActivity();
+//            currentRNcontext = applicationContext;
+//            currentActivityContext = applicationContext.getCurrentActivity();
             applicationContext.addLifecycleEventListener(this);
             this.createAdView();
         } catch (Exception exception) {
@@ -84,25 +87,49 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
     @Override
     public void requestLayout() {
         super.requestLayout();
-	try {
+	    try {
             if (isFluid()) {
+                Log.i("DEBUGX Ad: ", "requestLayout FLUID: " + isFluid());
                 post(new MeasureAndLayoutRunnable());
             }
         } catch (Exception exception) { }
     }
+
+    public void destoryBanner() {
+        try {
+            if (this.adManagerAdView != null) {
+                this.currentActivityContext = null;
+                this.adManagerAdView.destroy();
+            }
+        } catch (Exception exception) { };
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        try {
+            if (isFluid()) {
+                Log.i("DEBUGX Ad: ", "onLayout FLUID: " + isFluid());
+                post(new MeasureAndLayoutRunnable());
+            }
+        } catch (Exception exception) { }
+    }
+
     private void createAdView() {
         try {
             if (this.adManagerAdView != null)
                 this.adManagerAdView.destroy();
-            if (this.currentActivityContext == null)
-                return;
-            this.adManagerAdView = new AdManagerAdView(currentActivityContext);
-            if (isFluid()) {
-                AdManagerAdView.LayoutParams layoutParams = new AdManagerAdView.LayoutParams(
-                    ReactViewGroup.LayoutParams.MATCH_PARENT,
-                    ReactViewGroup.LayoutParams.WRAP_CONTENT);
-                this.adManagerAdView.setLayoutParams(layoutParams);
-            }
+
+            final Context context = getContext();
+
+            this.adManagerAdView = new AdManagerAdView(context);
+           if (isFluid()) {
+               AdManagerAdView.LayoutParams layoutParams = new AdManagerAdView.LayoutParams(
+                   ReactViewGroup.LayoutParams.MATCH_PARENT,
+                   ReactViewGroup.LayoutParams.WRAP_CONTENT);
+               this.adManagerAdView.setLayoutParams(layoutParams);
+           }
             this.adManagerAdView.setAppEventListener(this);
             this.adManagerAdView.setAdListener(new AdListener() {
                 @Override
@@ -113,10 +140,14 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         width = getWidth();
                         height = getHeight();
                     } else {
+                        Log.i("DEBUGX Ad: ", "onAdLoaded adunit: " + adUnitID + ": " + isFluid());
                         top = adManagerAdView.getTop();
                         left = adManagerAdView.getLeft();
                         width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
                         height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+                        Log.i("DEBUGX Ad: ", "onAdLoaded size: " + width + " " + height + " " + top + " " + left);
+                        adManagerAdView.measure(width, height);
+                        adManagerAdView.layout(left, top, left + width, top + height);
                     }
                     if (!isFluid()) {
                         sendOnSizeChangeEvent();
@@ -142,6 +173,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 @Override
                 public void onAdFailedToLoad(LoadAdError adError) {
                     String errorMessage = "Unknown error";
+                    Log.i("DEBUGX Ad: ", "onAdFailedToLoad adunit: " + adUnitID);
                     switch (adError.getCode()) {
                         case AdManagerAdRequest.ERROR_CODE_INTERNAL_ERROR:
                             errorMessage = "Internal error, an invalid response was received from the ad server.";
@@ -178,6 +210,8 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     sendEvent(RNAdManagerBannerViewManager.EVENT_AD_RECORD_IMPRESSION, event);
                 }
             });
+            this.removeAllViews();
+
             this.addView(this.adManagerAdView);
         } catch (Exception e) {
             sendErrorEvent("✅💪Error found at ad manager when createAdView(): " + e.getMessage() + "!");
@@ -228,6 +262,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 adSizes.add(AdSize.BANNER);
             }
             AdSize[] adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
+            Log.i("DEBUGX Ad: ", "loadBanner setAdSizes: " + adSizesArray.toString());
             this.adManagerAdView.setAdSizes(adSizesArray);
             AdManagerAdRequest.Builder adRequestBuilder = new AdManagerAdRequest.Builder();
             List<String> testDevicesList = new ArrayList<>();
@@ -296,7 +331,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             AdManagerAdRequest adRequest = adRequestBuilder.build();
             this.adManagerAdView.loadAd(adRequest);
         } catch (Exception e) {
-            sendErrorEvent("✅💪Error found at ad manager when loadBanner(): " + e.getMessage() + "!");
+           sendErrorEvent("✅💪Error found at ad manager when loadBanner(): " + e.getMessage() + "!");
             this.onException(e);
         }
     } // End of loadBanner()
@@ -305,9 +340,9 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         try {
             WritableMap params = Arguments.createMap();
             params.putString("error", errorMessage);
-            currentRNcontext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onError", params);
+//            currentRNcontext
+//                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                .emit("onError", params);
         } catch (Exception e) {
 // non-critical error, so ignore.
         }
@@ -449,6 +484,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 } else {
                     adManagerAdView.measure(width, height);
                 }
+
                 adManagerAdView.layout(left, top, left + width, top + height);
             } catch (Exception e) {
                 sendErrorEvent(
@@ -456,4 +492,17 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             }
         }
     } // end of Runnable
+
+    private static void measureAndLayout(View view, int width, int height) {
+        try {
+            int left = 0;
+            int top = 0;
+
+            view.measure(width, height);
+            view.layout(left, top, left + width, top + height);
+            view.requestLayout();
+            view.invalidate();
+            view.forceLayout();
+        } catch (Exception exception) { }
+    }
 }

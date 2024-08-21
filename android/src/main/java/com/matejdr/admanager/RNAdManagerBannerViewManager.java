@@ -65,6 +65,7 @@ public class RNAdManagerBannerViewManager extends ViewGroupManager<BannerAdView>
             view.adManagerAdView.setAppEventListener(null);
             view.adManagerAdView.setAdListener(null);
             view.adManagerAdView.destroy();
+           view.destoryBanner();
         }
         super.onDropViewInstance(view);
     }
