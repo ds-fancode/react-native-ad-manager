@@ -17,9 +17,6 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
-import com.google.ads.mediation.admob.AdMobAdapter;
-import com.google.ads.mediation.facebook.FacebookAdapter;
-import com.google.ads.mediation.facebook.FacebookExtras;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdSize;
@@ -269,11 +266,7 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
 
                     adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
 
-                    Bundle fbExtras = new FacebookExtras()
-                        .setNativeBanner(true)
-                        .build();
-
-                    adRequestBuilder.addNetworkExtrasBundle(FacebookAdapter.class, fbExtras);
+                    
 
                     // Targeting
                     if (hasTargeting) {
@@ -566,10 +559,6 @@ public class NativeAdViewContainer extends ReactViewGroup implements AppEventLis
         }
 
         Bundle extras = nativeAd.getExtras();
-        if (extras.containsKey(FacebookAdapter.KEY_SOCIAL_CONTEXT_ASSET)) {
-            String socialContext = (String) extras.get(FacebookAdapter.KEY_SOCIAL_CONTEXT_ASSET);
-            ad.putString("socialContext", socialContext);
-        }
 
         sendEvent(RNAdManagerNativeViewManager.EVENT_AD_LOADED, ad);
     }
