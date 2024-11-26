@@ -206,8 +206,6 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
         Bundle bundle = new Bundle();
         bundle.putString("correlator", correlator);
 
-        adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
-
         // Targeting
         if (hasTargeting) {
             if (customTargeting != null && customTargeting.length > 0) {
