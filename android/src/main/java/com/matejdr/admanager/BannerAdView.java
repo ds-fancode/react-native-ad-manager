@@ -14,7 +14,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
-import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.LoadAdError;
@@ -284,7 +283,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             }
             Bundle bundle = new Bundle();
             bundle.putString("correlator", correlator);
-            adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
 // Targeting
             if (hasTargeting) {
                 if (customTargeting != null && customTargeting.length > 0) {
