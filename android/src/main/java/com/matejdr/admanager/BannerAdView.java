@@ -88,7 +88,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         super.requestLayout();
 	    try {
             if (isFluid()) {
-                Log.i("DEBUGX Ad: ", "requestLayout FLUID: " + isFluid());
                 post(new MeasureAndLayoutRunnable());
             }
         } catch (Exception exception) { }
@@ -109,7 +108,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
         try {
             if (isFluid()) {
-                Log.i("DEBUGX Ad: ", "onLayout FLUID: " + isFluid());
                 post(new MeasureAndLayoutRunnable());
             }
         } catch (Exception exception) { }
@@ -139,12 +137,10 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         width = getWidth();
                         height = getHeight();
                     } else {
-                        Log.i("DEBUGX Ad: ", "onAdLoaded adunit: " + adUnitID + ": " + isFluid());
                         top = adManagerAdView.getTop();
                         left = adManagerAdView.getLeft();
                         width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
                         height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
-                        Log.i("DEBUGX Ad: ", "onAdLoaded size: " + width + " " + height + " " + top + " " + left);
                         adManagerAdView.measure(width, height);
                         adManagerAdView.layout(left, top, left + width, top + height);
                     }
@@ -172,7 +168,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 @Override
                 public void onAdFailedToLoad(LoadAdError adError) {
                     String errorMessage = "Unknown error";
-                    Log.i("DEBUGX Ad: ", "onAdFailedToLoad adunit: " + adUnitID);
                     switch (adError.getCode()) {
                         case AdManagerAdRequest.ERROR_CODE_INTERNAL_ERROR:
                             errorMessage = "Internal error, an invalid response was received from the ad server.";
@@ -261,7 +256,6 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 adSizes.add(AdSize.BANNER);
             }
             AdSize[] adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
-            Log.i("DEBUGX Ad: ", "loadBanner setAdSizes: " + adSizesArray.toString());
             this.adManagerAdView.setAdSizes(adSizesArray);
             AdManagerAdRequest.Builder adRequestBuilder = new AdManagerAdRequest.Builder();
             List<String> testDevicesList = new ArrayList<>();
