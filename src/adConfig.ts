@@ -1,4 +1,22 @@
 import { THEMES } from './Constants';
+import type { INativeAdElement } from './native-ads/native-ads'
+
+
+
+interface NativeADComponentMap {
+  s300x250: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
+  s320x152: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
+  s320x50: React.MemoExoticComponent<{
+    (props: INativeAdElement): JSX.Element;
+    defaultProps: {};
+}>
+}
 
 interface IAdConfig {
   endPoint?: string;
@@ -12,6 +30,7 @@ interface IAdConfig {
   isExternalRedirectionEnabled?: boolean;
   gamAdTargetingURI?: string;
   staticAdTargetting?: Record<string, any>;
+  nativeAdComponentMap?: NativeADComponentMap;
 }
 
 const parseURI = (uri: string) => {
@@ -43,6 +62,7 @@ class AdConfiguration {
   private isExternalRedirectionEnabled: boolean;
   private gamAdTargetingURI: string;
   private staticAdTargetting?: Record<string, string>;
+  private nativeAdComponentMap?: NativeADComponentMap | null;
   constructor() {
     // Default endpoint
     this.endPoint = 'https://www.fancode.com/graphql';
@@ -56,6 +76,7 @@ class AdConfiguration {
     this.isExternalRedirectionEnabled = false;
     this.gamAdTargetingURI = '';
     this.staticAdTargetting = {};
+    this.nativeAdComponentMap =  null
   }
   // update the endpoint when application is launched
   updateValue(options: IAdConfig) {
@@ -88,6 +109,9 @@ class AdConfiguration {
         ...this.staticAdTargetting,
         ...options.staticAdTargetting,
       };
+    }
+    if (options.nativeAdComponentMap) {
+      this.nativeAdComponentMap = options.nativeAdComponentMap
     }
   }
   setEndpoint(endpoint: string) {
@@ -126,6 +150,21 @@ class AdConfiguration {
       ...this.getStaticAdTargetting(),
       ...this.getGamAdTargeting(),
     };
+  }
+  getNativeAdComponent(size?: string) {
+    switch (size) {
+      case '300x250':
+        return this.nativeAdComponentMap?.s300x250
+
+      case '320x152':
+        return this.nativeAdComponentMap?.s320x152
+
+      case '320x50':
+        return this.nativeAdComponentMap?.s320x50
+    
+      default:
+        return this.nativeAdComponentMap?.s300x250
+    }
   }
 }
 

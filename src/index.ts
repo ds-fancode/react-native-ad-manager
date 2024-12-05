@@ -2,6 +2,7 @@ export { default as Interstitial } from './CTKAdManagerInterstitial';
 
 export { Banner } from './CTKAdManagerBanner';
 export { AdaptiveBanner } from './CTKAdManagerAdaptiveBanner';
+export { INativeAd } from './native-ads/native-ads.type';
 export { NativeAdsManager } from './native-ads/NativeAdsManager';
 export { TriggerableView } from './native-ads/TriggerableViewManager';
 export { default as withNativeAd } from './native-ads/withNativeAd';
