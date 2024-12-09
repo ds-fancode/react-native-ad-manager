@@ -65,8 +65,8 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
     _requestAdResolve = nil;
     _requestAdReject = nil;
 
-    BOOL hasBeenUsed =  [_interstitial canPresentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController error:nil];
-    if (hasBeenUsed || _interstitial == nil) {
+    BOOL isReady =  [_interstitial canPresentFromRootViewController:[UIApplication sharedApplication].delegate.window.rootViewController error:nil];
+    if (!isReady) {
         _requestAdResolve = resolve;
         _requestAdReject = reject;
 
@@ -86,9 +86,9 @@ RCT_EXPORT_METHOD(requestAd:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromise
             if (keywords != nil) {
                 request.keywords = keywords;
             }
-            NSString *contentURL = [_targeting objectForKey:@"contentURL"];
-            if (contentURL != nil) {
-                request.contentURL = contentURL;
+            NSString *content_url = [_targeting objectForKey:@"content_url"];
+            if (content_url != nil) {
+                request.contentURL = content_url;
             }
             NSString *publisherProvidedID = [_targeting objectForKey:@"publisherProvidedID"];
             if (publisherProvidedID != nil) {
@@ -180,6 +180,7 @@ RCT_EXPORT_METHOD(isReady:(RCTResponseSenderBlock)callback)
     if (hasListeners) {
         [self sendEventWithName:kEventAdClosed body:nil];
     }
+    _interstitial = nil;
 }
 
 @end

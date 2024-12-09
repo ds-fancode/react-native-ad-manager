@@ -5,6 +5,8 @@ import {
   ViewProps,
   findNodeHandle,
   NativeSyntheticEvent,
+  DeviceEventEmitter,  
+  EventSubscription
 } from 'react-native';
 import { createErrorFromErrorData } from './utils';
 import type {
@@ -53,6 +55,9 @@ interface IAdManagerBannerPropsBase extends ViewProps {
 }
 
 interface IAdManagerBannerProps extends IAdManagerBannerPropsBase {
+  // onError is a callback function sent from parent RN component of your RN app, aka: the error handler. 
+  // so if your RN App wants to handle the error, please pass in the "onError" function.
+  onError?: (eventData: Error) => void;
   /**
    * DFP library events
    */
@@ -62,6 +67,7 @@ interface IAdManagerBannerProps extends IAdManagerBannerPropsBase {
   onAppEvent?: (event: IAdManagerEventAppEvent) => void;
   onAdOpened?: (event: IAdManagerEventBase) => void;
   onAdClosed?: (event: IAdManagerEventBase) => void;
+  onAdRecordImpression?: (event: IAdManagerEventBase) => void;
 }
 
 interface IAdManagerBannerState {
@@ -69,6 +75,7 @@ interface IAdManagerBannerState {
     width?: number;
     height?: number;
   };
+  error: Error | null;
 }
 
 interface IAdManagerBannerNativeProps extends IAdManagerBannerPropsBase {
@@ -85,6 +92,7 @@ interface IAdManagerBannerNativeProps extends IAdManagerBannerPropsBase {
   onAppEvent?: (event: NativeSyntheticEvent<IAdManagerEventAppEvent>) => void;
   onAdOpened?: (event: NativeSyntheticEvent<IAdManagerEventBase>) => void;
   onAdClosed?: (event: NativeSyntheticEvent<IAdManagerEventBase>) => void;
+  onAdRecordImpression?: (event: NativeSyntheticEvent<IAdManagerEventBase>) => void;
 }
 
 const ComponentName = 'CTKBannerView';
@@ -100,11 +108,16 @@ export class Banner extends React.Component<
   IAdManagerBannerProps,
   IAdManagerBannerState
 > {
+  hasOnErrorFromParent: boolean;
+  customListener: EventSubscription | undefined;
+
   constructor(props: IAdManagerBannerProps) {
     super(props);
+    this.hasOnErrorFromParent = Object.prototype.hasOwnProperty.call(props, 'onError');
     this.handleSizeChange = this.handleSizeChange.bind(this);
     this.state = {
       style: {},
+      error: null,
     };
   }
 
@@ -124,9 +137,21 @@ export class Banner extends React.Component<
   }
 
   componentDidMount() {
+    this.customListener= DeviceEventEmitter.addListener('onError',eventData=>{
+      this.setState({ error: eventData });
+      if (this.hasOnErrorFromParent && this.props.onError) {      
+        this.props.onError(eventData);
+      }
+    });    
     this.loadBanner();
   }
-
+  
+  componentWillUnmount() {
+    if (this.customListener) {
+      this.customListener.remove();
+    }
+  }
+  
   loadBanner() {
     UIManager.dispatchViewManagerCommand(
       findNodeHandle(this),
@@ -164,6 +189,9 @@ export class Banner extends React.Component<
         }
         onAdClosed={(event) =>
           this.props.onAdClosed && this.props.onAdClosed(event.nativeEvent)
+        }
+        onAdRecordImpression={(event) =>
+          this.props.onAdRecordImpression && this.props.onAdRecordImpression(event.nativeEvent)
         }
       />
     );

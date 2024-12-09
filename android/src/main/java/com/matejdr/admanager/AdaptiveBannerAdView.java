@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
-import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.LoadAdError;
@@ -44,7 +43,7 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
     CustomTargeting[] customTargeting;
     String[] categoryExclusions;
     String[] keywords;
-    String contentURL;
+    String content_url;
     String publisherProvidedID;
     Location location;
     String correlator;
@@ -149,6 +148,12 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
                 sendEvent(RNAdManagerAdaptiveBannerViewManager.EVENT_AD_CLOSED, event);
             }
 
+            @Override
+            public void onAdImpression() {
+                WritableMap event = Arguments.createMap();
+                sendEvent(RNAdManagerAdaptiveBannerViewManager.EVENT_AD_RECORD_IMPRESSION, event);
+            }
+
         });
         this.addView(this.adManagerAdView);
     }
@@ -201,8 +206,6 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
         Bundle bundle = new Bundle();
         bundle.putString("correlator", correlator);
 
-        adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
-
         // Targeting
         if (hasTargeting) {
             if (customTargeting != null && customTargeting.length > 0) {
@@ -233,15 +236,18 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
                     }
                 }
             }
-            if (contentURL != null) {
-                adRequestBuilder.setContentUrl(contentURL);
+            if (content_url != null) {
+                adRequestBuilder.setContentUrl(content_url);
             }
             if (publisherProvidedID != null) {
                 adRequestBuilder.setPublisherProvidedId(publisherProvidedID);
             }
-            if (location != null) {
-                adRequestBuilder.setLocation(location);
-            }
+
+            // setLocation() became obsolete since GMA SDK version 21.0.0, link reference below:
+            //          https://developers.google.com/admob/android/rel-notes
+            //if (location != null) {
+            //    adRequestBuilder.setLocation(location);
+            //}
         }
 
         AdManagerAdRequest adRequest = adRequestBuilder.build();
@@ -283,8 +289,8 @@ class AdaptiveBannerAdView extends ReactViewGroup implements AppEventListener, L
         this.keywords = keywords;
     }
 
-    public void setContentURL(String contentURL) {
-        this.contentURL = contentURL;
+    public void setContentURL(String content_url) {
+        this.content_url = content_url;
     }
 
     public void setPublisherProvidedID(String publisherProvidedID) {

@@ -1,16 +1,12 @@
 package com.matejdr.admanager;
-
 import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Choreographer;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -18,7 +14,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewGroup;
-import com.google.ads.mediation.admob.AdMobAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.LoadAdError;
@@ -31,39 +26,39 @@ import com.matejdr.admanager.customClasses.CustomTargeting;
 import com.matejdr.admanager.utils.Targeting;
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 class BannerAdView extends ReactViewGroup implements AppEventListener, LifecycleEventListener {
-
-    protected AdManagerAdView adView;
+    protected AdManagerAdView adManagerAdView;
+//    ReactApplicationContext currentRNcontext;
     Activity currentActivityContext;
     String[] testDevices;
     AdSize[] validAdSizes;
     String adUnitID;
     AdSize adSize;
-    boolean isFluid = false;
-
     // Targeting
     Boolean hasTargeting = false;
     CustomTargeting[] customTargeting;
     String[] categoryExclusions;
     String[] keywords;
-    String contentURL;
+    String content_url;
     String publisherProvidedID;
     Location location;
     String correlator;
-
+    int top;
+    int left;
+    int width;
+    int height;
     public BannerAdView(final Context context, ReactApplicationContext applicationContext) {
         super(context);
-
         try {
+//            currentRNcontext = applicationContext;
+//            currentActivityContext = applicationContext.getCurrentActivity();
             applicationContext.addLifecycleEventListener(this);
             this.createAdView();
-        } catch (Exception exception) { this.onException(exception); }
+        } catch (Exception exception) {
+            this.onException(exception);
+        }
     }
-
     private void onException(Exception exception) {
         try {
             WritableMap event = Arguments.createMap();
@@ -73,126 +68,38 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             error.putString("message", message);
             event.putMap("error", error);
             sendEvent(RNAdManagerBannerViewManager.EVENT_AD_FAILED_TO_LOAD, event);
-
-            if (this.adView != null) {
+            if (this.adManagerAdView != null) {
                 try {
-                    this.adView.destroy();
-                } catch (Exception innerIgnored) {}
-
-                this.adView = null;
+                    this.adManagerAdView.destroy();
+                } catch (Exception innerIgnored) {
+// ignore it
+                }
+                this.adManagerAdView = null;
             }
-        } catch (Exception ignored) {}
-    }
-
-    private void createAdView() {
-        try {
-            if (this.adView != null) {
-                this.adView.destroy();
-            }
-
-            final Context context = getContext();
-
-            this.adView = new AdManagerAdView(context);
-            this.adView.setAppEventListener(this);
-            this.adView.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    try {
-                        AdSize adSize = adView.getAdSize();
-                        Context context = getContext();
-
-                        int width = adSize.getWidthInPixels(context);
-                        int height = adSize.getHeightInPixels(context);
-
-                        int left = adView.getLeft();
-                        int top = adView.getTop();
-
-                        adView.measure(width, height);
-                        adView.layout(left, top, left + width, top + height);
-
-                        sendOnSizeChangeEvent();
-                        WritableMap ad = Arguments.createMap();
-                        ad.putString("type", "banner");
-
-                        WritableMap gadSize = Arguments.createMap();
-
-                        int adWidth = adSize.getWidth();
-                        int adHeight = adSize.getHeight();
-
-                        gadSize.putDouble("width", adWidth);
-                        gadSize.putDouble("height", adHeight);
-
-                        ad.putMap("gadSize", gadSize);
-
-                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
-                        setupLayout();
-                    } catch (Exception exception) { }
-                }
-
-                @Override
-                public void onAdFailedToLoad(LoadAdError adError) {
-                    try {
-                        String errorMessage = "Unknown error";
-                        switch (adError.getCode()) {
-                            case AdManagerAdRequest.ERROR_CODE_INTERNAL_ERROR:
-                                errorMessage = "Internal error, an invalid response was received from the ad server.";
-                                break;
-                            case AdManagerAdRequest.ERROR_CODE_INVALID_REQUEST:
-                                errorMessage = "Invalid ad request, possibly an incorrect ad unit ID was given.";
-                                break;
-                            case AdManagerAdRequest.ERROR_CODE_NETWORK_ERROR:
-                                errorMessage = "The ad request was unsuccessful due to network connectivity.";
-                                break;
-                            case AdManagerAdRequest.ERROR_CODE_NO_FILL:
-                                errorMessage = "The ad request was successful, but no ad was returned due to lack of ad inventory.";
-                                break;
-                        }
-                        WritableMap event = Arguments.createMap();
-                        WritableMap error = Arguments.createMap();
-                        error.putString("message", errorMessage);
-                        event.putMap("error", error);
-                        sendEvent(RNAdManagerBannerViewManager.EVENT_AD_FAILED_TO_LOAD, event);
-                    } catch (Exception exception) { }
-                }
-
-                @Override
-                public void onAdOpened() {
-                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_OPENED, null);
-                }
-
-                @Override
-                public void onAdClosed() {
-                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_CLOSED, null);
-                }
-
-            });
-            this.removeAllViews();
-            this.addView(this.adView);
-        } catch (Exception exception) {
-            this.onException(exception);
+        } catch (Exception e) {
+// ignore it
         }
     }
-
-    private class MeasureAndLayoutRunnable implements Runnable {
-        @Override
-        public void run() {
-            updateLayout();
-        }
-    }
-
     private boolean isFluid() {
-        return this.isFluid;
+        return AdSize.FLUID.equals(this.adSize);
     }
-
     @Override
     public void requestLayout() {
         super.requestLayout();
-
-        try {
+	    try {
             if (isFluid()) {
                 post(new MeasureAndLayoutRunnable());
             }
         } catch (Exception exception) { }
+    }
+
+    public void destoryBanner() {
+        try {
+            if (this.adManagerAdView != null) {
+                this.currentActivityContext = null;
+                this.adManagerAdView.destroy();
+            }
+        } catch (Exception exception) { };
     }
 
     @Override
@@ -206,103 +113,132 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
         } catch (Exception exception) { }
     }
 
-    private static void measureAndLayout(View view, int width, int height) {
+    private void createAdView() {
         try {
-            int left = 0;
-            int top = 0;
+            if (this.adManagerAdView != null)
+                this.adManagerAdView.destroy();
 
-            view.measure(width, height);
-            view.layout(left, top, left + width, top + height);
-            view.requestLayout();
-            view.invalidate();
-            view.forceLayout();
-        } catch (Exception exception) { }
-    }
+            final Context context = getContext();
 
-    int cachedWidth = 0;
-    int cachedHeight = 0;
-
-    private void updateLayout() {
-        try {
-            if (!isFluid()) {
-                return;
-            }
-            if (adView == null) {
-                return;
-            }
-
-            View parent = (View) adView.getParent();
-
-            if (parent == null) {
-                return;
-            }
-
-            int width = parent.getWidth();
-            int height = parent.getHeight();
-
-            if (cachedWidth == width && cachedHeight == height) {
-                return;
-            }
-
-            cachedWidth = width;
-            cachedHeight = height;
-
-            // In case of fluid ads, every GAD view and their subviews must be laid out by hand,
-            // otherwise the web view won't align to the container bounds.
-            measureAndLayout(adView, width, height);
-
-            ViewGroup child = (ViewGroup) adView.getChildAt(0);
-
-            if (child != null) {
-                measureAndLayout(child, width, height);
-
-                ViewGroup webView = (ViewGroup) child.getChildAt(0);
-
-                if (webView != null) {
-                    measureAndLayout(webView, width, height);
-
-                    ViewGroup internalChild = (ViewGroup) webView.getChildAt(0);
-
-                    if (internalChild != null) {
-                        measureAndLayout(internalChild, width, height);
-
-                        ViewGroup leafNode = (ViewGroup) internalChild.getChildAt(0);
-
-                        if (leafNode != null) {
-                            measureAndLayout(leafNode, width, height);
-                        }
+            this.adManagerAdView = new AdManagerAdView(context);
+           if (isFluid()) {
+               AdManagerAdView.LayoutParams layoutParams = new AdManagerAdView.LayoutParams(
+                   ReactViewGroup.LayoutParams.MATCH_PARENT,
+                   ReactViewGroup.LayoutParams.WRAP_CONTENT);
+               this.adManagerAdView.setLayoutParams(layoutParams);
+           }
+            this.adManagerAdView.setAppEventListener(this);
+            this.adManagerAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    if (isFluid()) {
+                        top = 0;
+                        left = 0;
+                        width = getWidth();
+                        height = getHeight();
+                    } else {
+                        top = adManagerAdView.getTop();
+                        left = adManagerAdView.getLeft();
+                        width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
+                        height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+                        adManagerAdView.measure(width, height);
+                        adManagerAdView.layout(left, top, left + width, top + height);
                     }
+                    if (!isFluid()) {
+                        sendOnSizeChangeEvent();
+                    }
+                    WritableMap ad = Arguments.createMap();
+                    ad.putString("type", "banner");
+                    WritableMap gadSize = Arguments.createMap();
+                    gadSize.putString("adSize", adManagerAdView.getAdSize().toString());
+                    gadSize.putDouble("width", adManagerAdView.getAdSize().getWidth());
+                    gadSize.putDouble("height", adManagerAdView.getAdSize().getHeight());
+                    ad.putMap("gadSize", gadSize);
+                    ad.putString("isFluid", String.valueOf(isFluid()));
+                    WritableMap measurements = Arguments.createMap();
+                    measurements.putInt("adWidth", width);
+                    measurements.putInt("adHeight", height);
+                    measurements.putInt("width", getMeasuredWidth());
+                    measurements.putInt("height", getMeasuredHeight());
+                    measurements.putInt("left", left);
+                    measurements.putInt("top", top);
+                    ad.putMap("measurements", measurements);
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_LOADED, ad);
                 }
-            }
-        } catch (Exception exception) {
-        }
-    }
+                @Override
+                public void onAdFailedToLoad(LoadAdError adError) {
+                    String errorMessage = "Unknown error";
+                    switch (adError.getCode()) {
+                        case AdManagerAdRequest.ERROR_CODE_INTERNAL_ERROR:
+                            errorMessage = "Internal error, an invalid response was received from the ad server.";
+                            break;
+                        case AdManagerAdRequest.ERROR_CODE_INVALID_REQUEST:
+                            errorMessage = "Invalid ad request, possibly an incorrect ad unit ID was given.";
+                            break;
+                        case AdManagerAdRequest.ERROR_CODE_NETWORK_ERROR:
+                            errorMessage = "The ad request was unsuccessful due to network connectivity.";
+                            break;
+                        case AdManagerAdRequest.ERROR_CODE_NO_FILL:
+                            errorMessage = "The ad request was successful, but no ad was returned due to lack of ad inventory.";
+                            break;
+                    }
+                    WritableMap event = Arguments.createMap();
+                    WritableMap error = Arguments.createMap();
+                    error.putString("message", errorMessage);
+                    event.putMap("error", error);
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_FAILED_TO_LOAD, event);
+                }
+                @Override
+                public void onAdOpened() {
+                    WritableMap event = Arguments.createMap();
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_OPENED, event);
+                }
+                @Override
+                public void onAdClosed() {
+                    WritableMap event = Arguments.createMap();
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_CLOSED, event);
+                }
+                @Override
+                public void onAdImpression() {
+                    WritableMap event = Arguments.createMap();
+                    sendEvent(RNAdManagerBannerViewManager.EVENT_AD_RECORD_IMPRESSION, event);
+                }
+            });
+            this.removeAllViews();
 
+            this.addView(this.adManagerAdView);
+        } catch (Exception e) {
+            sendErrorEvent("✅💪Error found at ad manager when createAdView(): " + e.getMessage() + "!");
+            this.onException(e);
+        }
+    } // end of createAdView
     private void sendOnSizeChangeEvent() {
         try {
             int width;
             int height;
             WritableMap event = Arguments.createMap();
-            AdSize adSize = this.adView.getAdSize();
+            AdSize adSize = this.adManagerAdView.getAdSize();
             width = adSize.getWidth();
             height = adSize.getHeight();
             event.putString("type", "banner");
             event.putDouble("width", width);
             event.putDouble("height", height);
             sendEvent(RNAdManagerBannerViewManager.EVENT_SIZE_CHANGE, event);
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when sendOnSizeChangeEvent(): " + e.getMessage() + "!");
+        }
     }
-
     private void sendEvent(String name, @Nullable WritableMap event) {
         try {
             ReactContext reactContext = (ReactContext) getContext();
             reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-                    getId(),
-                    name,
-                    event);
-        } catch (Exception exception) { }
+                getId(),
+                name,
+                event);
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when sendEvent(): " + e.getMessage() + "!");
+        }
     }
-
     public void loadBanner() {
         try {
             ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
@@ -316,16 +252,12 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     }
                 }
             }
-
             if (adSizes.size() == 0) {
                 adSizes.add(AdSize.BANNER);
             }
-
             AdSize[] adSizesArray = adSizes.toArray(new AdSize[adSizes.size()]);
-            this.adView.setAdSizes(adSizesArray);
-
+            this.adManagerAdView.setAdSizes(adSizesArray);
             AdManagerAdRequest.Builder adRequestBuilder = new AdManagerAdRequest.Builder();
-
             List<String> testDevicesList = new ArrayList<>();
             if (testDevices != null) {
                 for (int i = 0; i < testDevices.length; i++) {
@@ -335,23 +267,17 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                     }
                     testDevicesList.add(testDevice);
                 }
-                RequestConfiguration requestConfiguration
-                        = new RequestConfiguration.Builder()
-                        .setTestDeviceIds(testDevicesList)
-                        .build();
+                RequestConfiguration requestConfiguration = new RequestConfiguration.Builder()
+                    .setTestDeviceIds(testDevicesList)
+                    .build();
                 MobileAds.setRequestConfiguration(requestConfiguration);
             }
-
             if (correlator == null) {
                 correlator = (String) Targeting.getCorelator(adUnitID);
             }
             Bundle bundle = new Bundle();
             bundle.putString("correlator", correlator);
-
-            adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
-
-
-            // Targeting
+// Targeting
             if (hasTargeting) {
                 if (customTargeting != null && customTargeting.length > 0) {
                     for (int i = 0; i < customTargeting.length; i++) {
@@ -381,163 +307,194 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         }
                     }
                 }
-                if (contentURL != null) {
-                    adRequestBuilder.setContentUrl(contentURL);
+                if (content_url != null) {
+                    adRequestBuilder.setContentUrl(content_url);
                 }
                 if (publisherProvidedID != null) {
                     adRequestBuilder.setPublisherProvidedId(publisherProvidedID);
                 }
-                if (location != null) {
-                    adRequestBuilder.setLocation(location);
-                }
+// setLocation() became obsolete since GMA SDK version 21.0.0, link reference
+// below:
+// https://developers.google.com/admob/android/rel-notes
+// if (location != null) {
+// adRequestBuilder.setLocation(location);
+// }
             }
-
             AdManagerAdRequest adRequest = adRequestBuilder.build();
-            this.adView.loadAd(adRequest);
-        } catch (Exception exception) { this.onException(exception); }
-    }
-
-    public void destoryBanner() {
+            this.adManagerAdView.loadAd(adRequest);
+        } catch (Exception e) {
+           sendErrorEvent("✅💪Error found at ad manager when loadBanner(): " + e.getMessage() + "!");
+            this.onException(e);
+        }
+    } // End of loadBanner()
+    // bubble up error to JS/TS level.
+    public void sendErrorEvent(String errorMessage) {
         try {
-            if (this.adView != null) {
-                this.currentActivityContext = null;
-                this.adView.destroy();
-            }
-        } catch (Exception exception) { };
+            WritableMap params = Arguments.createMap();
+            params.putString("error", errorMessage);
+//            currentRNcontext
+//                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+//                .emit("onError", params);
+        } catch (Exception e) {
+// non-critical error, so ignore.
+        }
     }
-
     public void setAdUnitID(String adUnitID) {
         try {
             if (this.adUnitID != null) {
-                // We can only set adUnitID once, so when it was previously set we have
-                // to recreate the view
+// We can only set adUnitID once, so when it was previously set we have
+// to recreate the view
                 this.createAdView();
             }
             this.adUnitID = adUnitID;
-            if(this.adView != null) {
-                this.adView.setAdUnitId(adUnitID);
-            }
-        } catch (Exception exception) { }
+            this.adManagerAdView.setAdUnitId(adUnitID);
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setAdUnitID(): " + e.getMessage() + "!");
+        }
     }
-
     public void setTestDevices(String[] testDevices) {
         try {
             this.testDevices = testDevices;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setTestDevices(): " + e.getMessage() + "!");
+        }
     }
-
     // Targeting
     public void setCustomTargeting(CustomTargeting[] customTargeting) {
         try {
             this.customTargeting = customTargeting;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setCustomTargeting(): " + e.getMessage() + "!");
+        }
     }
-
     public void setCategoryExclusions(String[] categoryExclusions) {
         try {
             this.categoryExclusions = categoryExclusions;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setCategoryExclusions(): " + e.getMessage() + "!");
+        }
     }
-
     public void setKeywords(String[] keywords) {
         try {
             this.keywords = keywords;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setKeywords(): " + e.getMessage() + "!");
+        }
     }
-
-    public void setContentURL(String contentURL) {
+    public void setContentURL(String content_url) {
         try {
-            this.contentURL = contentURL;
-        } catch (Exception exception) { }
+            this.content_url = content_url;
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setContentURL(): " + e.getMessage() + "!");
+        }
     }
-
     public void setPublisherProvidedID(String publisherProvidedID) {
         try {
             this.publisherProvidedID = publisherProvidedID;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setPublisherProvidedID(): " + e.getMessage() + "!");
+        }
     }
-
     public void setLocation(Location location) {
         try {
             this.location = location;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setLocation(): " + e.getMessage() + "!");
+        }
     }
-
     public void setAdSize(AdSize adSize) {
         try {
             this.adSize = adSize;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setAdSize(): " + e.getMessage() + "!");
+        }
     }
-
     public void setValidAdSizes(AdSize[] adSizes) {
         try {
             this.validAdSizes = adSizes;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setValidAdSizes(): " + e.getMessage() + "!");
+        }
     }
-
     public void setCorrelator(String correlator) {
         try {
             this.correlator = correlator;
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when setCorrelator(): " + e.getMessage() + "!");
+        }
     }
-
     @Override
     public void onAppEvent(String name, String info) {
         try {
-            this.isFluid = true;
-
-            this.updateLayout();
-
             WritableMap event = Arguments.createMap();
             event.putString("name", name);
             event.putString("info", info);
             sendEvent(RNAdManagerBannerViewManager.EVENT_APP_EVENT, event);
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when onAppEvent(): " + e.getMessage() + "!");
+        }
     }
-
     @Override
     public void onHostResume() {
         try {
-            if (this.adView != null) {
-                this.adView.resume();
+            if (this.adManagerAdView != null) {
+                this.adManagerAdView.resume();
             }
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when onHostResume(): " + e.getMessage() + "!");
+        }
     }
-
     @Override
     public void onHostPause() {
         try {
-            if (this.adView != null) {
-                this.adView.pause();
+            if (this.adManagerAdView != null) {
+                this.adManagerAdView.pause();
             }
-        } catch (Exception exception) { }
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when onHostResume(): " + e.getMessage() + "!");
+        }
     }
-
     @Override
     public void onHostDestroy() {
         try {
-            if (this.adView != null) {
+            if (this.adManagerAdView != null) {
                 this.currentActivityContext = null;
-                this.adView.destroy();
+                this.adManagerAdView.destroy();
             }
-        } catch (Exception exception) { };
-    }
-
-    private Choreographer.FrameCallback postFrameCallback = new Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-            post(new MeasureAndLayoutRunnable());
-            getViewTreeObserver().dispatchOnGlobalLayout();
-            Choreographer.getInstance().postFrameCallback(postFrameCallback);
+        } catch (Exception e) {
+            sendErrorEvent("Error found at ad manager when onHostDestroy(): " + e.getMessage() + "!");
         }
-    };
+    }
+    private class MeasureAndLayoutRunnable implements Runnable {
+        @Override
+        public void run() {
+            try {
+                if (isFluid()) {
+                    adManagerAdView.measure(
+                        MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
+                        MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
+                } else {
+                    adManagerAdView.measure(width, height);
+                }
 
-    private void setupLayout() {
-        try {
-            if (!isFluid()) {
-                return;
+                adManagerAdView.layout(left, top, left + width, top + height);
+            } catch (Exception e) {
+                sendErrorEvent(
+                    "Error found at ad manager when MeasureAndLayoutRunnable::run(): " + e.getMessage() + "!");
             }
-            Choreographer.getInstance().postFrameCallback(postFrameCallback);
-        } catch (Exception exception) { };
+        }
+    } // end of Runnable
+
+    private static void measureAndLayout(View view, int width, int height) {
+        try {
+            int left = 0;
+            int top = 0;
+
+            view.measure(width, height);
+            view.layout(left, top, left + width, top + height);
+            view.requestLayout();
+            view.invalidate();
+            view.forceLayout();
+        } catch (Exception exception) { }
     }
 }
