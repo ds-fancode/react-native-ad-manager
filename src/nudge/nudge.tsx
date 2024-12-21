@@ -104,8 +104,7 @@ function GAMNudgeView(props: IGAMNudgeProps) {
       <FlatList
         showsHorizontalScrollIndicator={false}
         renderItem={(item) => {
-          const { adWidth, aspectRatio } = item.item;
-          const adunitID = '/22693816480/nativebanner'
+          const { adWidth, aspectRatio, adunitID } = item.item;
           return (
             <GamBannerView
               adunitID={adunitID}
