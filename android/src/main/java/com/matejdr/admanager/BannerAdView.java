@@ -277,7 +277,10 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
             }
             Bundle bundle = new Bundle();
             bundle.putString("correlator", correlator);
-// Targeting
+
+            adRequestBuilder.addNetworkExtrasBundle(AdMobAdapter.class, bundle);
+
+            // Targeting
             if (hasTargeting) {
                 if (customTargeting != null && customTargeting.length > 0) {
                     for (int i = 0; i < customTargeting.length; i++) {
