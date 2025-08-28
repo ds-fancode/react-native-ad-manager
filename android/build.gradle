@@ -24,6 +24,7 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
+    namespace 'com.matejdr.admanager'
     compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
