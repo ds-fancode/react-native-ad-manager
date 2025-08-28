@@ -159,6 +159,8 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                         left = adManagerAdView.getLeft();
                         width = adManagerAdView.getAdSize().getWidthInPixels(getContext());
                         height = adManagerAdView.getAdSize().getHeightInPixels(getContext());
+                        adManagerAdView.measure(width, height);
+                        adManagerAdView.layout(left, top, left + width, top + height);
                     }
 
                     if (!isFluid()) {
@@ -231,6 +233,7 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
                 }
 
             });
+            this.removeAllViews();
             this.addView(this.adManagerAdView);
         } catch (Exception e) {
             sendErrorEvent("✅💪Error found at ad manager when createAdView(): " + e.getMessage() + "!");
