@@ -272,6 +272,16 @@ class BannerAdView extends ReactViewGroup implements AppEventListener, Lifecycle
 
     public void loadBanner() {
         try {
+            // Clear existing ad before loading new one
+            if (this.adManagerAdView != null) {
+                this.removeView(this.adManagerAdView);
+                this.adManagerAdView.destroy();
+                this.adManagerAdView = null;
+            }
+            
+            // Recreate the ad view
+            this.createAdView();
+
             ArrayList<AdSize> adSizes = new ArrayList<AdSize>();
             if (this.adSize != null) {
                 adSizes.add(this.adSize);
